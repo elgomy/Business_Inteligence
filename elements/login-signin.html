@@ -1,0 +1,93 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
+
+<dom-module id="login-signin">
+  <template>
+    <style>
+      :host {
+        
+        top: 46px;
+        left: 0;
+        right: 0;
+        bottom: 0;
+       
+       /* background-color: var(--paper-indigo-a200); */
+       
+
+       @apply(--layout-flex);
+      }
+
+    /*  :host([signed-in]) { /*condicional de estilo que nos permite que cuando el usuario se loguee el componente se haga invisible
+        opacity: 0;
+        pointer-events: none; 
+      } */
+
+      paper-button > * {
+        vertical-align: middle;
+        text-transform: none;
+      }
+
+      img{
+      height: 40px;
+      width: 40px;
+    } 
+    </style>
+    
+    
+    
+    <div>
+  <!--sign in con email y password -->
+    <paper-input 
+          id="emailInput"
+          
+          label="E-mail" 
+          value="{{dato.email}}"
+          >
+    </paper-input>
+    <paper-input required label="Senha" type="password" value="{{dato.password}}"></paper-input>
+    <paper-button raised on-tap="signEmail">Entrar</paper-button>
+    </div>
+
+  
+   
+  </template>
+
+  <script>
+    Polymer({
+      is: 'login-signin',
+
+      properties: {
+        
+          //propiedad que se activa cuando el usuario está logueado
+        signedIn: {
+          type: Boolean,
+          reflectToAttribute: true,
+          value: false
+        },
+  
+      
+          //objeto con los datos del usuario (propiedades 'email' y 'password')
+        dato:{
+          type:Object,
+          notify:true,
+          value: function(){
+            return{
+              email:'',
+              password:''
+            }
+          }
+        }
+      },
+
+      // método para loguear con 'Google' que lanzará el evento personalizado 'sign-google' para hacer el enlace con el componente <login-gestion> al que se le pasará la variable 'google' que contiene el método 'firebase.auth.GoogleAuthProvider()'. Se le pasará esta variable al método 'link' a través del parámetro 'social'
+ 
+
+      signEmail:function(){       
+        this.fire('sign-email', this.dato);
+      }
+      
+
+    });
+  </script>
+</dom-module>

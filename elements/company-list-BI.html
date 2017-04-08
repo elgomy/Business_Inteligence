@@ -1,0 +1,80 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../behaviors/BI-behavior.html">
+<link rel="import" href="company-BI.html">
+
+
+<!--
+`company-list-BI`
+lista de denuncias creadas en Animilia y almacenadas en Firebase
+
+@demo demo/index.html 
+-->
+
+<dom-module id="company-list-BI">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+
+      paper-card{
+          margin-bottom:10px;
+      }
+    </style>
+
+    <template is="dom-repeat" items="[[data]]" as="company">    
+
+    <paper-card 
+            heading="[[company.identificador]]" 
+           
+
+            alt="[[company.identificador]]">
+          
+          <div class="card-content">
+            [[company.descripcion]]
+          </div>
+    <div class="card-actions">
+        <paper-button company="[[company]]" on-tap="edition">Editar</paper-button>
+        <paper-button company="[[company]]" on-tap="remove">Deletar</paper-button>
+        <paper-button company="[[company]]" on-tap="send">Enviar</paper-button>
+    </div>
+    </paper-card>  
+
+  </template>
+
+  </template>
+
+  <script>
+    Polymer({
+
+      is: 'company-list-BI',
+
+      properties:{
+        data:Object,
+        company:Object
+      },
+
+      behaviors: [Polymer.BIBehavior],
+
+       // el evento 'delete' se recibe en el componente <my-app> para poder abrir el 'dialog' 
+      remove:function(e) {   
+        var companyItem = e.currentTarget.company;
+        this.fire('delete', companyItem) 
+      },
+
+      edition:function(e) {    
+        var companyItem = e.currentTarget.company;
+        this.fire('edition', companyItem) 
+      },
+
+      send:function(e) {    
+        var companyItem = e.currentTarget.company;
+        this.fire('send', companyItem) 
+      },     
+    
+
+    });
+  </script>
+</dom-module>

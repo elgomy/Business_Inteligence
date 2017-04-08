@@ -1,0 +1,172 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/polymerfire/polymerfire.html">
+<!-- iron elements-->
+<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../bower_components/iron-signals/iron-signals.html">
+<!-- paper elements-->
+<link rel="import" href="../bower_components/paper-fab/paper-fab.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/paper-toast/paper-toast.html">
+<!-- company elements -->
+<link rel="import" href="company-BI.html">
+<link rel="import" href="company-edit.html">
+<link rel="import" href="company-list-BI.html">
+<!-- behaviors-->
+<link rel="import" href="../behaviors/input-behavior.html">
+<link rel="import" href="../behaviors/BI-behavior.html">
+
+<!--
+`editor-animilia`
+editor con el que vamos poder guardar las denuncias, editarlas, etc
+
+@demo demo/index.html 
+-->
+
+<dom-module id="editor-animilia">
+  <template>
+    <style>
+      :host {
+        display: block;
+
+      }
+    
+    </style>
+
+    <firebase-auth 
+            app-name="form-polymerfire"
+            id="auth" 
+            user="{{user}}">
+    </firebase-auth>
+
+    <firebase-query
+            id="query"
+            app-name="form-polymerfire"
+            path="/denuncias/[[user.uid]]"
+            data="{{data}}">
+    </firebase-query>
+
+    <iron-signals on-iron-signal-delete="removeItem"></iron-signals>
+     
+    <iron-pages selected="{{section}}" attr-for-selected="name">
+
+      <!-- creación de denuncias -->
+      
+       <div name="create">
+       <iron-icon icon="clear" id="clearIcon"></iron-icon>
+          <company-BI company="{{company}}" inputs="{{inputs}}"></company-BI>
+          <paper-fab icon="done" id="saveButton"></paper-fab>  
+       </div>
+
+       <!-- lista de denuncias -->
+
+      <div name="list">
+      <paper-fab icon="add" id="createcompany"></paper-fab>
+          <company-list-BI data="{{data}}" company="{{company}}"></company-list-BI>  
+      </div>
+
+      <!-- editor de denuncias -->
+
+      <div name="editor">
+          <company-edit id="editor"></company-edit>  
+      </div>
+          
+   </iron-pages>
+
+  </template>
+
+  <script>
+    Polymer({
+
+      is: 'editor-animilia',
+
+      properties: {
+         user:Object,
+         logueado: Boolean,
+         data:Array,
+         company:Object,
+         section:{
+            type:String,
+            value:'list'
+         },     
+      },
+
+      behaviors: [Polymer.inputBehavior, Polymer.BIBehavior],
+
+      listeners:{
+         'saveButton.tap': 'save',    
+         'createcompany.tap': 'create',
+         'deletecompany': 'removeItem',
+         'edition': 'editcompany',
+         'send': 'sendcompany',
+         'closeEditor':'backList',
+         'clearIcon.tap': 'backList'
+     },
+  
+      // método para guardar los datos de la denuncia en Firebase
+      save:function(){
+
+        if(!this.user){
+          this.fire('negative-toast', 'você deve estar autenticado');
+          return false;
+        }
+   
+        if(this.company.identificador && this.company.descripcion){
+          // sube los datos de la denuncia a Firebase
+          this.$.query.ref.push(this.company)
+            .then(function(){
+                this.fire('positive-toast', 'Grupo criado');
+                    // después de introducir los valores en los input se limpia el texto. Fijamos tanto la fecha como la dirección, ya que si los limpiamos el sistema no genera de nuevo esos valores. Behavior 'animilia-behavior'
+                this.resetcompany();
+                   // una vez guardada la denuncia, volvemos a mostrar el listado de denuncias 
+                this.backList();
+              }.bind(this))
+            .catch(function(error){
+                this.fire('negative-toast', 'error: ' + error);
+            }.bind(this));  
+                        
+        } else {
+          // al clickar en el botón 'guardar' se lanza el mètodo validator, incluido en el behavior, que valida los inputs
+          for(var i = 0; i < this.inputs.length; i++ ){
+              this.validator(this.inputs[i])
+           };           
+        };                          
+      },
+
+    create:function(){
+      this.section = 'create';     
+    },
+
+    backList:function(){
+      this.section = 'list'
+    },
+
+  //  removecompany:function(){
+  //    this.$.dialog.open()
+
+  //  },
+
+    // borrado de la denuncia clickada en la lista. Enlace con el componente <company-list-BI>
+    removeItem:function(e,companyItem){
+     this.$.query.ref.child(companyItem.$key).remove();
+     
+    },
+
+     // edición de la denuncia clickada en la lista. Enlace del componente <company-list-BI> con el componente <company-edit>. Recibimos el objeto de la denuncia 'companyItem' desde el componente <company-list-BI> y se lo inyectamos a la propiedad 'item' del componente <company-edit>, para que podamos editar la denuncia. Tambièn le pasamos el path de la denuncia a travès de la propiedad 'path', de manera que podamos hacer el update a dicho path.
+    editcompany:function(e,companyItem){
+      this.section = 'editor';
+      this.$.editor.item = companyItem;
+      this.$.editor.path = this.$.query.ref.child(companyItem.$key);          
+    },
+    // envio de la denuncia por email. El usuario tiene que tener un gestor de correo, sino no funciona. Como alternativa podemos elaborar codigo en NodeJS
+    sendcompany:function(e,companyItem){
+      window.location.href = "mailto:mail@example.org"
+                          +"?subject="+"test"
+                          +"&body="+companyItem.descripcion
+    }
+    
+
+    });
+  </script>
+</dom-module>

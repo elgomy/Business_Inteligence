@@ -1,0 +1,163 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<!-- behaviors-->
+<link rel="import" href="../behaviors/firebase-behavior.html">
+<link rel="import" href="../behaviors/login-behavior.html">
+
+<!--
+`login-registro`
+elemento para hacer el registro en firebase a travès de email y password
+
+@demo demo/index.html 
+-->
+
+<dom-module id="login-update">
+  <template>
+    <style>
+      :host {
+       
+      }
+    </style>
+    <h2>Upate</h2>
+     <paper-input label="Senha" type="password" value="{{data.password}}"></paper-input>
+    <a href="#" on-click="sendEmailPass">Esqueci minha senha</a>
+      <paper-button raised on-tap="deleteUser">Deletar</paper-button>
+      <h3>atualizar E-mail</h3>
+      <paper-input label="E-mail" value="{{data.email}}"></paper-input>
+      <paper-button raised on-tap="updateEmail">Atualizar E-mail</paper-button>
+       <paper-button raised on-tap="updatePass">Atualizar Senha</paper-button>
+    
+    
+      
+  </template>
+
+  <script>
+    Polymer({
+
+      is: 'login-update',
+
+      properties: {
+          
+          fbapp:Object,
+          credential:String,
+          user:Object,
+          data: {
+            type:Object,
+            value: function(){
+              return{
+                password:'',
+                name:'',
+                email:''
+              }
+            }
+          }
+        },
+
+        behaviors:[Polymer.firebaseBehavior, Polymer.loginBehavior],
+       
+        // envio de email para restablecimiento de contraseña
+         sendEmailPass:function(){
+           if(!this.user){
+              this.fire('negative-toast','Você nao esta logueado');
+              return false
+              }
+          if (this.user.providerData[0].providerId == 'password'){
+                this.fbapp.auth().sendPasswordResetEmail(this.user.email)
+                .then(function() {
+                    this.fire('positive-toast','E-mail para restabelecer senha enviado');
+                }.bind(this), 
+                    function(error) {
+                      console.log(error)
+                    });
+             return false;
+            }
+          this.fire('negative-toast','Você está cadastrado com uma Rede Social!');
+
+      },
+
+       // borrado de la cuenta del usuario. La cuenta se borrará del path 'usuarios' y se pasarà al path 'users_deleted'
+      deleteUser:function(data){   
+        if(!this.user){
+          this.fire('negative-toast','Você nao esta logueado');
+          return false
+        }
+
+        switch(this.user.providerData[0].providerId){
+          case 'password':
+          var credential = firebase.auth.EmailAuthProvider.credential(this.user.email,this.data.password)
+          break
+          case 'google.com':
+          var credential = firebase.auth.GoogleAuthProvider.credential(this.credential);
+          break
+          case 'facebook.com':
+          var credential = firebase.auth.FacebookAuthProvider.credential(this.credential);
+          break
+        }
+
+        this.user.reauthenticate(credential).then(function(){   
+             this.user.delete().then(function(){
+                  this.fire('positive-toast','Conta encerrada');
+                  this.firebasePath('/users_deleted/' + this.user.uid).set({
+                   //    nombre: this.user.providerData[0].displayName || data.name || 'nome desconhecido', 
+                       email: this.user.email || 'no-email@example.com',   
+                      })
+                  this.firebasePath('/users/' + this.user.uid).remove();
+                  this.resetRegister();
+            }.bind(this))
+        }.bind(this),
+            function(error){
+              this.errorCode(error);
+            }.bind(this))
+      },
+
+      updateEmail:function(){
+          if(!this.user){
+              this.fire('negative-toast','Você nao esta logueado');
+              return false
+              }
+          if (this.user.providerData[0].providerId == 'password'){
+              var credential = firebase.auth.EmailAuthProvider.credential(this.user.email,this.data.password);
+              this.user.reauthenticate(credential).then(function(){   
+                  this.user.updateEmail(this.data.email).then(function(){
+                      this.fire('positive-toast','Email atualizado');
+                      this.firebasePath('/users/' + this.user.uid).update({email: this.data.email,}); 
+                      this.resetRegister();
+                  }.bind(this))
+              }.bind(this),
+                  function(error){
+                      this.errorCode(error);
+                  }.bind(this))
+             return false;
+            }
+          this.fire('negative-toast','Você está cadastrado com uma Rede Social!');
+      },
+
+      updatePass:function(){
+          if(!this.user){
+              this.fire('negative-toast','Você nao esta logueado');
+              return false
+              }
+          if (this.user.providerData[0].providerId == 'password'){
+              var credential = firebase.auth.EmailAuthProvider.credential(this.user.email,this.data.password);
+              this.user.reauthenticate(credential).then(function(){   
+                  this.user.updatePassword(this.data.password).then(function(){
+                      this.fire('positive-toast','Senha atualizada');
+                      console.log(this.user.password);
+                      this.resetRegister();
+                  }.bind(this))
+              }.bind(this),
+                  function(error){
+                      this.errorCode(error);
+                  }.bind(this))
+             return false;
+            }
+          this.fire('negative-toast','Você está cadastrado com uma Rede Social!');
+      },
+  
+
+
+
+    });
+  </script>
+</dom-module>

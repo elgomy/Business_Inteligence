@@ -1,0 +1,89 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../bower_components/paper-input/paper-textarea.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../behaviors/input-behavior.html">
+
+
+
+<!--
+`form-animilia`
+formulario de entrada de denuncias de maltrato animal
+
+@demo demo/index.html 
+-->
+
+<dom-module id="company-BI">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>   
+  
+<!-- sistema de entrada de datos para generar la denuncia -->
+
+    <paper-input 
+          id="idInput" 
+          label="Nome do Grupo"
+          required
+          on-keydown="validateNull"
+          error-message="necessário incluir um Nome"
+          value="{{company.identificador}}">          
+    </paper-input>
+
+     <paper-textarea 
+          id="textInput" 
+          label="Relato do que você presenciou"
+          rows="2"
+          required   
+          on-keydown="validateNull"
+          error-message="necessário relatar a denúncia"
+          value="{{company.descripcion}}">                
+    </paper-textarea>
+
+
+
+  </template>
+
+  <script>
+    Polymer({
+
+      is: 'company-BI',
+
+      properties: {
+
+         // objeto company donde guardaremos todos los datos de la denuncia, que vienen bindeados desde el componente <company-BI>
+         company:{
+          type:Object,
+          notify:true,
+          value:function(){
+            return{        
+              identificador:'',
+              fecha:new Date().toLocaleString(),
+              descripcion:'',
+              
+              }
+            }      
+         },    
+
+          // inputs del formulario
+         inputs:{
+            type:Array,
+            value: function(){
+              return [this.$.idInput,this.$.textInput]
+            },
+            notify: true,
+         },
+
+          
+      },
+
+       behaviors: [Polymer.inputBehavior],
+
+   
+
+   
+    });
+  </script>
+</dom-module>

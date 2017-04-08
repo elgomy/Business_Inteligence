@@ -1,0 +1,49 @@
+<script>
+
+	Polymer.BIBehavior = {
+
+		validator:function(input){
+			return input.validate()
+			},
+
+// con este método excluimos el mensaje de error del método validate(). Se lanza cuando comenzamos a escribir dentro del input (on-keydown)
+    validateNull:function(){       
+        
+      this.inputs[0].invalid = null; 
+   	  this.inputs[1].invalid = null; 
+   	  this.inputs[2].invalid = null;    
+     
+      },
+
+    resetcompany:function(){
+        this.company= {         
+                identificador:'',
+                descripcion:'',
+                fecha:new Date().toLocaleString(),
+                address:this.company.address
+               
+            }
+    },
+
+    delete:function(target){
+    
+      var key = target.$key;
+      this.$.query.ref.child(key).remove()
+      },
+
+     edit:function(target){
+      var key = target.$key;
+        this.$.query.ref.child(key).update({
+           identificador: this.company.identificador,
+           descripcion: this.company.descripcion,
+           fecha: new Date().toLocaleString(),
+           address: this.company.address
+        })
+      },
+
+
+   }
+
+      		
+
+</script>

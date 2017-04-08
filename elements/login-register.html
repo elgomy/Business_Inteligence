@@ -1,0 +1,70 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+
+
+<!--
+`login-registro`
+elemento para hacer el registro en firebase a travès de email y password
+
+@demo demo/index.html 
+-->
+
+<dom-module id="login-register">
+  <template>
+    <style>
+      :host {
+      @apply(--layout-flex);
+      
+      }
+
+    /*  :host([signed-in]) { /*condicional de estilo que nos permite que cuando el usuario se loguee el componente se haga invisible
+        opacity: 0;
+        pointer-events: none; 
+      } */
+    </style>
+    
+    <paper-input label="Nome" value="{{data.name}}"></paper-input>
+    <paper-input label="E-mail" value="{{data.email}}" auto-validate error-message="email invalido"></paper-input>
+    <paper-input label="Senha" type="password" value="{{data.password}}"></paper-input>
+    <paper-button raised on-tap="signUp">Criar Conta</paper-button>
+
+    
+      
+  </template>
+
+  <script>
+    Polymer({
+
+      is: 'login-register',
+
+      properties: {
+        // objeto que contiene el email y el password del registro del usuario obtenidos a través del <paper-input>
+        data:{
+          type:Object,
+          notify:true,
+          value: function(){
+            return{
+              email:'', 
+              password:'',
+              name:''
+            }
+          }
+        },
+        // tendrá valor 'true' cuando el usuario esté logueado
+        signedIn: {
+          type: Boolean,
+          reflectToAttribute: true,
+          value: false
+        }
+      },
+      // método que lanzará el evento personalizado 'register', para hacer el enlace con el componente <login-gestion>, pasando el objeto 'data', que contiene el 'email' y 'password' del usuario
+      signUp:function(){
+        this.fire('register',this.data)
+      },
+
+
+
+    });
+  </script>
+</dom-module>

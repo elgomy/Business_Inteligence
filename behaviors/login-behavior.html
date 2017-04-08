@@ -1,0 +1,72 @@
+<script>
+
+	Polymer.loginBehavior = {
+
+    errorCode:function(error){
+      	switch (error.code){
+            case 'auth/provider-already-linked':
+            this.fire('negative-toast','Red Social ya asociada a un usuario')
+            break
+            case 'auth/invalid-credential':
+             this.fire('negative-toast','Credencial de autenticación expirada. Por favor, intentar de nuevo')
+            break
+            case 'auth/credential-already-in-use':
+            this.fire('negative-toast','Red Social ya asociada a un usuario')
+            break
+            case 'auth/email-already-in-use':
+            this.fire('negative-toast','Email ya asociado a un usuario')
+            break
+            case 'auth/invalid-email':
+            this.fire('negative-toast','Email o Password inválidos')
+            break
+            case 'auth/wrong-password':
+            this.fire('negative-toast','Email o Password inválidos')
+            break
+            break
+            case 'auth/weak-password':
+            this.fire('negative-toast','El password debe tener mínimo 6 caracteres')
+            break      	 
+            case 'auth/user-disabled':
+            this.fire('negative-toast','Usuario no autorizado. Por favor, entrar en contacto')
+            break
+            case 'auth/user-not-found':
+            this.fire('negative-toast','No existe un usuario asociado a ese email')
+            break
+            case 'auth/argument-error':
+            this.fire('negative-toast','Email inválido')
+            break
+            
+               
+          }
+    	},
+
+    resetRegister:function(){
+            this.data = {
+            email:'',
+            password: '',
+            name:''
+            }
+	   },
+
+    resetSignin:function(){
+            this.dato = {
+            email:'',
+            password: ''
+            
+            }
+       },
+
+    notLogged:function(){
+       if(!this.user){
+              this.fire('negative-toast','Você nao esta logueado');
+              return false
+              }
+        }
+
+    
+
+    }
+
+      		
+
+</script>

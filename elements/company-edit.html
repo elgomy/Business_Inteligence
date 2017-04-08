@@ -1,0 +1,75 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-fab/paper-fab.html">
+<link rel="import" href="../behaviors/input-behavior.html">
+
+<!-- componente <current-location.html> -->
+<link rel="import" href="company-BI.html">
+
+
+<!--
+`form-animilia`
+formulario de entrada de denuncias de maltrato animal
+
+@demo demo/index.html 
+-->
+
+<dom-module id="company-edit">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>   
+
+<iron-icon icon="clear" id="clearIcon"></iron-icon>  
+<company-BI company="{{item}}"></company-BI>
+
+<paper-fab icon="done" id="saveButton"></paper-fab>
+
+  </template>
+
+  <script>
+    Polymer({
+
+      is: 'company-edit',
+
+      properties: {
+
+         // objeto company donde guardaremos todos los datos de la denuncia, que vienen bindeados desde el componente <company-BI>
+         item:Object,  
+         path:Object
+        },   
+
+       behaviors: [Polymer.inputBehavior],
+
+          listeners:{
+         'saveButton.tap': 'save',
+         'clearIcon.tap': 'close'
+        },
+
+        // método para guardar los datos de la denuncia en Firebase
+      save:function(){
+        
+          var itemUpdate = {
+             identificador: this.item.identificador,
+             descripcion: this.item.descripcion
+          };
+
+          this.path.update(itemUpdate)
+              .then(function(){
+                this.fire('positive-toast', 'Grupo editado');
+                this.close();
+              }.bind(this))
+              .catch(function(error){
+              this.fire('negative-toast', 'error: ' + error);
+            }.bind(this));
+          },
+
+      close:function(){
+        this.fire('closeEditor')
+      },
+
+   
+    });
+  </script>
+</dom-module>
