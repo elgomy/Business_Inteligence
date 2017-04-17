@@ -15,12 +15,13 @@
      
       },
 
-    resetcompany:function(){
+    // después de introducir los valores en los input se limpia el texto (formulario de introducción de datos de los grupos). Fijamos tanto la fecha como la dirección, ya que si los limpiamos el sistema no genera de nuevo esos valores. 
+    resetCompany:function(){
         this.company= {         
                 identificador:'',
                 descripcion:'',
                 fecha:new Date().toLocaleString(),
-                address:this.company.address
+                expireDate:''
                
             }
     },
@@ -37,9 +38,11 @@
            identificador: this.company.identificador,
            descripcion: this.company.descripcion,
            fecha: new Date().toLocaleString(),
-           address: this.company.address
+         //  address: this.company.address
         })
       },
+
+    
 
 
    }

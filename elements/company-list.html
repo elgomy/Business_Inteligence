@@ -2,7 +2,7 @@
 <link rel="import" href="../bower_components/paper-card/paper-card.html">
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../behaviors/BI-behavior.html">
-<link rel="import" href="company-BI.html">
+<link rel="import" href="company-bo.html">
 
 
 <!--
@@ -12,7 +12,7 @@ lista de denuncias creadas en Animilia y almacenadas en Firebase
 @demo demo/index.html 
 -->
 
-<dom-module id="company-list-BI">
+<dom-module id="company-list">
   <template>
     <style>
       :host {
@@ -33,7 +33,8 @@ lista de denuncias creadas en Animilia y almacenadas en Firebase
             alt="[[company.identificador]]">
           
           <div class="card-content">
-            [[company.descripcion]]
+            <p>[[company.descripcion]]</p>
+            <p>Data Revisao: [[company.expireDate]]</p>
           </div>
     <div class="card-actions">
         <paper-button company="[[company]]" on-tap="edition">Editar</paper-button>
@@ -49,7 +50,7 @@ lista de denuncias creadas en Animilia y almacenadas en Firebase
   <script>
     Polymer({
 
-      is: 'company-list-BI',
+      is: 'company-list',
 
       properties:{
         data:Object,
@@ -63,10 +64,11 @@ lista de denuncias creadas en Animilia y almacenadas en Firebase
         var companyItem = e.currentTarget.company;
         this.fire('delete', companyItem) 
       },
-
+      // enlace con <bi-editor>
       edition:function(e) {    
         var companyItem = e.currentTarget.company;
-        this.fire('edition', companyItem) 
+        this.fire('edition', companyItem);
+       // console.log(companyItem) 
       },
 
       send:function(e) {    

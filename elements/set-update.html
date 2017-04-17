@@ -1,0 +1,146 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/polymerfire/polymerfire.html">
+<!-- paper elements -->
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/paper-radio-button/paper-radio-button.html">
+<link rel="import" href="../bower_components/paper-radio-group/paper-radio-group.html">
+
+<!-- custom elements -->
+<link rel="import" href="company-setor.html">
+
+
+
+<!--
+`form-animilia`
+formulario de entrada de denuncias de maltrato animal
+
+@demo demo/index.html 
+-->
+
+<dom-module id="set-update">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+
+      #editPeriod{
+        display: none
+      }
+    </style>   
+  
+  
+
+<template is="dom-if" if="{{display}}">
+    <paper-radio-group>
+        <paper-radio-button name="checked30" value="30" on-change="setPeriod">30 dias</paper-radio-button>
+        <paper-radio-button name="checked60" value="60" on-change="setPeriod">60 dias</paper-radio-button>
+        <paper-radio-button name="checked90" value="90" on-change="setPeriod">90 dias</paper-radio-button>
+        <paper-radio-button name="checked180" value="180" on-change="setPeriod">180 dias</paper-radio-button>
+    </paper-radio-group>
+</template>
+    
+    <p hidden$="{{display}}">Próxima Revisão: {{reviewDate}}</p>
+   
+<paper-button raised id="savePeriod">salvar</paper-button>
+<paper-button raised id="editPeriod">editar</paper-button>
+
+<iron-signals on-iron-signal-cleardate="editExpiration"></iron-signals>
+
+
+
+  </template>
+
+  <script>
+    Polymer({
+
+      is: 'set-update',
+
+      properties: {
+        
+         // plazo de renovación de los datos de la empresa. Definidos con los radio-buttons
+         period: Number,
+         // fecha de vencimiento de la renovación, calculada en base a las propiedades "currentDate" y "period"
+         expireDate:{
+            type:Date,
+            notify:true
+         },
+
+          reviewDate:{
+            type:Date,
+            notify:true
+         },
+      
+         // mes del año, que usaremos como filtro para subir al mes correspondiente de la agenda creada en Firebase
+         month:{
+          type:String,  
+          notify:true
+          }, 
+
+        
+          // condicionante para mostrar u ocultar determinados datos
+          display:{
+            type:String,
+            value:true
+          },     
+
+          
+      },
+
+      listeners:{
+         'savePeriod.tap': 'setExpiration', 
+         'editPeriod.tap': 'editExpiration'
+       },
+
+   
+      // función que asocia el valor del 'radio-button' a la propiedad 'period'
+      setPeriod:function(e){
+          if(e.currentTarget.checked){
+            this.period = parseInt(e.currentTarget.value);
+           // console.log(this.period)
+          }
+      },
+      // guardamos la fecha de vencimiento
+      setExpiration:function(){  
+
+          if(!this.period){
+            alert ('favor seleciona um periodo');
+            return false
+          };
+          var timestamp = Date.now();
+          this.expireDate =  new Date();
+          
+
+          var dayOfMonth = this.expireDate.getDate();        
+         this.expireDate.setDate(dayOfMonth + this.period);
+          var monthUpdate = this.expireDate.getMonth();
+          // enlace con el componente <bi-editor>
+          this.fire('monthUpdate',monthUpdate);
+          this.reviewDate = this.expireDate;
+         
+         // console.log(this.formattedDate);
+          // una vez guardado la fecha de vto, se oculta el botón de guardar y se muestra el de editar la fecha. Tambíen se oculta el radio-group
+          this.$.editPeriod.style.display = "inline-flex";
+          this.$.savePeriod.style.display = "none";
+          this.display = false;
+
+      //    this.fbCalendar(this.month);
+    
+      },
+      // editamos la fecha de vencimiento
+      editExpiration:function(){
+        this.expireDate = new Date();
+          this.$.editPeriod.style.display = "none";
+          this.$.savePeriod.style.display = "inline-flex";
+          this.display = true;
+      },
+
+      
+
+
+   
+
+   
+    });
+  </script>
+</dom-module>

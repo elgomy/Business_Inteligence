@@ -1,8 +1,16 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
+<!--paper elements -->
 <link rel="import" href="../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../bower_components/paper-input/paper-textarea.html">
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/paper-radio-button/paper-radio-button.html">
+<!--iron elements -->
+<link rel="import" href="../bower_components/iron-collapse/iron-collapse.html">
+<!-- behaviors -->
 <link rel="import" href="../behaviors/input-behavior.html">
+<!-- custom components -->
+<link rel="import" href="company-setor.html">
+<link rel="import" href="set-update.html">
 
 
 
@@ -13,7 +21,7 @@ formulario de entrada de denuncias de maltrato animal
 @demo demo/index.html 
 -->
 
-<dom-module id="company-BI">
+<dom-module id="company-bo">
   <template>
     <style>
       :host {
@@ -34,7 +42,7 @@ formulario de entrada de denuncias de maltrato animal
 
      <paper-textarea 
           id="textInput" 
-          label="Relato do que você presenciou"
+          label="Comentários"
           rows="2"
           required   
           on-keydown="validateNull"
@@ -43,13 +51,38 @@ formulario de entrada de denuncias de maltrato animal
     </paper-textarea>
 
 
+  <h3 on-tap="toggleUpdate">1.Próxima Revisão</h3>
+    <iron-collapse id="updateCollapse">
+      <div class="collapse-content">
+        <set-update expire-date="{{company.expireDate}}"></set-update>
+      </div>
+    </iron-collapse>
+
+  <h3 on-tap="toggleProfile">2.Perfil</h3>
+    <iron-collapse id="profileCollapse">
+      <div class="collapse-content">
+        Normal Acompanhamento Preventivo Acordo
+      </div>
+    </iron-collapse>
+
+   <h3 on-tap="toggleFinanc">3.Dados Financeiros</h3>
+    <iron-collapse id="financCollapse">
+      <div class="collapse-content">
+        Faturamento %Ebitda Risco Interno
+      </div>
+    </iron-collapse>
+
+
+
+<company-setor></company-setor>
+
 
   </template>
 
   <script>
     Polymer({
 
-      is: 'company-BI',
+      is: 'company-bo',
 
       properties: {
 
@@ -62,6 +95,7 @@ formulario de entrada de denuncias de maltrato animal
               identificador:'',
               fecha:new Date().toLocaleString(),
               descripcion:'',
+              expireDate:''
               
               }
             }      
@@ -76,11 +110,23 @@ formulario de entrada de denuncias de maltrato animal
             notify: true,
          },
 
+
           
       },
 
        behaviors: [Polymer.inputBehavior],
 
+        toggleUpdate:function(){
+          this.$.updateCollapse.toggle();
+        },
+
+        toggleProfile:function(){
+          this.$.profileCollapse.toggle();
+        },
+
+        toggleFinanc:function(){
+          this.$.financCollapse.toggle();
+        },
    
 
    
