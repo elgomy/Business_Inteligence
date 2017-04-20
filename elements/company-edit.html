@@ -36,9 +36,13 @@ formulario de entrada de denuncias de maltrato animal
       properties: {
 
          // objeto company donde guardaremos todos los datos de la denuncia, que vienen bindeados desde el componente <company-BI>
-         item:Object,  
+         item:{
+          type:Object, 
+          
+          }, 
          path:Object,
-         pathCalendar: Object
+         pathCalendar: Object,
+         atualMonth:Number,
         },   
 
        behaviors: [Polymer.inputBehavior],
@@ -46,25 +50,32 @@ formulario de entrada de denuncias de maltrato animal
           listeners:{
          'saveButton.tap': 'save',
          'clearIcon.tap': 'close'
-        },
+        },   
 
         // método para guardar los datos del Grupo en Firebase una vez editado. En este caso editamos las propiedades 'identificador' y 'descripcion'
-      save:function(){      
+      save:function(){ 
+       
           var itemUpdate = {
-             identificador: this.item.identificador,
-             descripcion: this.item.descripcion,
-             expireDate: this.item.expireDate
+                identificador: this.item.identificador,
+                descripcion: this.item.descripcion,
+                expireDate: this.item.expireDate
           };
 
           var calendarUpdate = {
-            identificador: this.item.identificador,
-            expireDate: this.item.expireDate
+                identificador: this.item.identificador,
+                expireDate: this.item.expireDate,
           };
-          this.pathCalendar.update(calendarUpdate);
+
+          this.pathCalendar.update(calendarUpdate)
+              .catch(function(error){
+                  this.fire('negative-toast', 'error: ' + error);
+            }.bind(this));
           this.path.update(itemUpdate)
               .then(function(){
-                  this.fire('positive-toast', 'Grupo editado');
-                  this.close();
+                // enlace con el componente <bi-editor>
+                this.fire('rescheduleEdit',calendarUpdate);       
+                this.fire('positive-toast', 'Grupo editado');
+                this.close();
               }.bind(this))
               .catch(function(error){
                   this.fire('negative-toast', 'error: ' + error);

@@ -23,9 +23,13 @@ lista de denuncias creadas en Animilia y almacenadas en Firebase
           margin-bottom:10px;
       }
     </style>
-
+    <h3>maio</h3>
+   <template is="dom-repeat" items="[[maio]]" as="agenda">  
+   <p>[[agenda.identificador]]</p>
+   </template>
+  <h3>Lista Empresas</h3>
     <template is="dom-repeat" items="[[data]]" as="company">    
-
+        
     <paper-card 
             heading="[[company.identificador]]" 
            
@@ -54,6 +58,7 @@ lista de denuncias creadas en Animilia y almacenadas en Firebase
 
       properties:{
         data:Object,
+        maio:Object,
         company:Object
       },
 

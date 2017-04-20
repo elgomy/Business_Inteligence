@@ -54,6 +54,8 @@ editor con el que vamos poder guardar los datos de entrada de los Grupos
             data="{{calendar}}">
     </firebase-query>
 
+     
+
     <iron-signals on-iron-signal-delete="removeItem"></iron-signals>
      
     <iron-pages selected="{{section}}" attr-for-selected="name">
@@ -64,17 +66,17 @@ editor con el que vamos poder guardar los datos de entrada de los Grupos
        <iron-icon icon="clear" id="clearIcon"></iron-icon>
           <company-bo company="{{company}}" inputs="{{inputs}}"></company-bo>
           <paper-fab icon="done" id="saveButton"></paper-fab>  
-          <paper-button raised on-tap="test">push test</paper-button>
+          
        </div>
 
        <!-- lista de denuncias -->
 
       <div name="list">
       <paper-fab icon="add" id="createcompany"></paper-fab>
-          <company-list data="{{data}}" company="{{company}}"></company-list>  
+          <company-list data="[[data]]" maio="[[maio]]" company="[[company]]"></company-list>  
       </div>
 
-      <!-- editor de denuncias -->
+      <!-- editor de Grupos -->
 
       <div name="editor">
           <company-edit id="editor"></company-edit>  
@@ -93,9 +95,15 @@ editor con el que vamos poder guardar los datos de entrada de los Grupos
          user:Object,
          logueado: Boolean,
          data:Array,
+         calendar:Array,
          company:Object,
+         // propiedad que hace referencia al mes del path de la agenda
          month:Number,
-         mes:String,
+        // propiedad que hace referencia al mes actual del path de la agenda, que será deletado cuando reagendemos el vencimiento  
+         atualMonth:Number,
+        // key del grupo dentro del path de la Agenda
+         calendarKey:String,
+        
          section:{
             type:String,
             value:'list'
@@ -112,10 +120,10 @@ editor con el que vamos poder guardar los datos de entrada de los Grupos
          'send': 'sendcompany',
          'closeEditor':'backList',
          'clearIcon.tap': 'backList',
-         'monthUpdate': 'setMonth'
+         'monthUpdate': 'setMonth',
+         'rescheduleEdit': 'reschedule',
+       
      },
-
-    
 
      // enlace con el componente <set-update>. Month será el filtro para guardar la fecha de la revisión en el mes correspondiente en la agenda de Firebase
      setMonth:function(e,monthUpdate){
@@ -140,17 +148,20 @@ editor con el que vamos poder guardar los datos de entrada de los Grupos
           
            // generamos una key (id) para el Grupo que será la misma para las 2 ramas
            var newCompanyKey = this.$.query.ref.push().key;
-
-           //
+            // subida de datos al path de la Agenda
             var calendarUpdates = {};
             // representa al path          =   datos a subir al path
             calendarUpdates[newCompanyKey] = calendarData;
-
+            // subida de datos al path de los Grupos
             var companyUpdates = {};
             companyUpdates[newCompanyKey] = this.company;
 
             // tenemos que usar 'update' en lugar de 'push' porque este último siempre genera una 'key', por lo que se generarían 2 keys
-           this.$.queryUpdate.ref.update(calendarUpdates);
+           this.$.queryUpdate.ref.update(calendarUpdates)
+            .catch(function(error){
+                this.fire('negative-toast', 'error: ' + error);
+
+            }.bind(this));
 
           this.$.query.ref.update(companyUpdates)
             .then(function(){
@@ -172,11 +183,60 @@ editor con el que vamos poder guardar los datos de entrada de los Grupos
           for(var i = 0; i < this.inputs.length; i++ ){
               this.validator(this.inputs[i])
            };  
-           if(!this.company.expireDate){
-            alert('deve incluir un periodo')
-           }         
+              
         };                          
       },
+
+    // borrado del grupo clickado en la lista. Enlace con el componente <company-list>
+    removeItem:function(e,companyItem){
+
+      // BI-behavior (atribuimos a la propiedad "month" del path de la Agenda el valor del mes para poder hacer el borrado)
+       this.monthCalendar(companyItem.expireDate);
+      // borramos los datos de la empresa en los dos paths de Firebase simultaneamente
+       this.$.query.ref.child(companyItem.$key).remove();
+       this.$.queryUpdate.ref.child(companyItem.$key).remove();
+     
+    },
+
+     // edición del grupo clickado en la lista. Enlace del componente <company-list> con el componente <company-edit>. Recibimos el objeto de la denuncia 'companyItem' desde el componente <company-list> y se lo inyectamos a la propiedad 'item' del componente <company-edit>, para que podamos editar la denuncia. Tambièn le pasamos el path de la denuncia a travès de la propiedad 'path', de manera que podamos hacer el update a dicho path.
+    editcompany:function(e,companyItem){
+
+      this.section = 'editor';
+
+      // componente <company-edit>
+      this.$.editor.item = companyItem; // a la propiedad item (objeto) del componente <company-edit> le inyectamos el objeto 'companyItem' que recibimos que recibimos desde el componente <company-list>. Lo mismo para la propiedad 'path'
+      this.$.editor.path = this.$.query.ref.child(companyItem.$key); 
+
+      // es necesario que asignemos un valor a 'month' porque si no 'ref' nos dará 'undefined'
+      
+      var timestamp = Date.parse(companyItem.expireDate);
+        
+      this.month = new Date(timestamp).getMonth(); 
+
+      // 'atualMonth' lo usaremos para definir el path actual a ser borrado con la función 'reschedule' cuando editemos la fecha de vencimiento (expireDate)
+      this.atualMonth = new Date(timestamp).getMonth();
+      // operativa para tener acceso a la key del Grupo en la Agenda, que serà usada en la función reschedule para reagendar el vencimiento
+      this.$.editor.pathCalendar =  this.$.queryUpdate.ref.child(companyItem.$key);
+      this.calendarKey = this.$.editor.pathCalendar.path.o[3];
+                
+    },
+
+      // enlace con el componente <company-edit>. Reagendado de los vencimientos
+    reschedule:function(e,calendarUpdate){
+         
+      var calendarUpdates = {};
+            // representa al path          =   datos a subir al path
+      calendarUpdates[this.calendarKey] = calendarUpdate;    
+      this.$.queryUpdate.ref.update(calendarUpdates)
+          .then(function(){
+              // atualaMonth se genera desde la función editcompany
+              this.month = this.atualMonth;
+              this.$.queryUpdate.ref.child(this.calendarKey).remove();
+          }.bind(this))
+          .catch(function(error){
+                  this.fire('negative-toast', 'error: ' + error);
+            }.bind(this));
+    }, 
 
     create:function(){
       this.section = 'create';     
@@ -186,29 +246,7 @@ editor con el que vamos poder guardar los datos de entrada de los Grupos
       this.section = 'list'
     },
 
-  //  removecompany:function(){
-  //    this.$.dialog.open()
 
-  //  },
-
-    // borrado del grupo clickado en la lista. Enlace con el componente <company-list>
-    removeItem:function(e,companyItem){
-     this.$.query.ref.child(companyItem.$key).remove();
-     
-    },
-
-     // edición del grupo clickado en la lista. Enlace del componente <company-list> con el componente <company-edit>. Recibimos el objeto de la denuncia 'companyItem' desde el componente <company-list> y se lo inyectamos a la propiedad 'item' del componente <company-edit>, para que podamos editar la denuncia. Tambièn le pasamos el path de la denuncia a travès de la propiedad 'path', de manera que podamos hacer el update a dicho path.
-    editcompany:function(e,companyItem){
-      this.section = 'editor';
-      this.$.editor.item = companyItem;
-      this.$.editor.path = this.$.query.ref.child(companyItem.$key); 
-      var timestamp = Date.parse(companyItem.expireDate);
-      var formattedDate = new Date(timestamp).getMonth();
-      console.log(formattedDate);
-      // es necesario que asignemos un valor a 'month' porque si no 'ref' nos dará 'undefined'
-        this.month = formattedDate;
-      this.$.editor.pathCalendar =  this.$.queryUpdate.ref.child(companyItem.$key);      
-    },
     // envio de la denuncia por email. El usuario tiene que tener un gestor de correo, sino no funciona. Como alternativa podemos elaborar codigo en NodeJS
     sendcompany:function(e,companyItem){
       window.location.href = "mailto:mail@example.org"

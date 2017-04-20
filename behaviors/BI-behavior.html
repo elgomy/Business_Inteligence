@@ -26,21 +26,14 @@
             }
     },
 
-    delete:function(target){
-    
-      var key = target.$key;
-      this.$.query.ref.child(key).remove()
-      },
 
-     edit:function(target){
-      var key = target.$key;
-        this.$.query.ref.child(key).update({
-           identificador: this.company.identificador,
-           descripcion: this.company.descripcion,
-           fecha: new Date().toLocaleString(),
-         //  address: this.company.address
-        })
-      },
+    monthCalendar: function(date){
+
+      var timestamp = Date.parse(date);
+      var formattedDate = new Date(timestamp).getMonth();
+      this.month = formattedDate;
+
+    }
 
     
 
