@@ -1,0 +1,124 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/polymerfire/polymerfire.html">
+<!-- paper elements -->
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/paper-radio-button/paper-radio-button.html">
+<link rel="import" href="../bower_components/paper-radio-group/paper-radio-group.html">
+
+
+
+
+
+<!--
+`form-animilia`
+formulario de entrada de denuncias de maltrato animal
+
+@demo demo/index.html 
+-->
+
+<dom-module id="set-profile">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+
+      #editProfile{
+        display: none
+      }
+    </style>   
+  
+  
+
+<template is="dom-if" if="{{display}}">
+    <paper-radio-group>
+        <paper-radio-button name="checkedNorm" value="Normal" on-change="checkProfile">Normal</paper-radio-button>
+        <paper-radio-button name="checkedAcomp" value="Acomp" on-change="checkProfile">Acompanhamento</paper-radio-button>
+        <paper-radio-button name="checkedPrev" value="Prev" on-change="checkProfile">Preventivo</paper-radio-button>
+        <paper-radio-button name="checkedLY" value="LY" on-change="checkProfile">Acordo</paper-radio-button>
+    </paper-radio-group>
+</template>
+    
+    <p hidden$="{{display}}">Perfil Selecionado: {{profile}}</p>
+   
+<paper-button raised id="saveProfile">salvar</paper-button>
+<paper-button raised id="editProfile">editar</paper-button>
+
+<iron-signals on-iron-signal-cleardate="updateProfile"></iron-signals>
+
+
+
+  </template>
+
+  <script>
+    Polymer({
+
+      is: 'set-profile',
+
+      properties: {
+        
+         // perfil de la empresa. Definidos con los radio-buttons
+         checkedProfile: String,
+         // propiedad del objeto 'company', al que le asignamos el valor seleccionado en la propiedad 'checkedProfile'
+         profile:{
+            type:String,
+            notify:true
+         },
+     
+
+        
+          // condicionante para mostrar u ocultar determinados datos
+          display:{
+            type:String,
+            value:true
+          },     
+
+          
+      },
+
+      listeners:{
+         'saveProfile.tap': 'setProfile', 
+         'editProfile.tap': 'updateProfile'
+       },
+
+   
+      // función que asocia el valor del 'radio-button' a la propiedad 'period'
+      checkProfile:function(e){
+          if(e.currentTarget.checked){
+            this.checkedProfile = e.currentTarget.value;
+           // console.log(this.period)
+          }
+      },
+      // guardamos la fecha de vencimiento
+      setProfile:function(){  
+
+          if(!this.checkedProfile){
+            alert ('favor seleciona um perfil');
+            return false
+          };
+          
+        this.profile = this.checkedProfile;
+       
+          // una vez guardado el pefil, se oculta el botón de guardar y se muestra el de editar. Tambíen se oculta el radio-group
+          this.$.editProfile.style.display = "inline-flex";
+          this.$.saveProfile.style.display = "none";
+          this.display = false;
+
+   
+    
+      },
+      // editamos la fecha de vencimiento
+      updateProfile:function(){
+        
+          this.$.editProfile.style.display = "none";
+          this.$.saveProfile.style.display = "inline-flex";
+          this.display = true;
+      },   
+
+
+   
+
+   
+    });
+  </script>
+</dom-module>

@@ -5,8 +5,7 @@
 <link rel="import" href="../bower_components/paper-radio-button/paper-radio-button.html">
 <link rel="import" href="../bower_components/paper-radio-group/paper-radio-group.html">
 
-<!-- custom elements -->
-<link rel="import" href="company-setor.html">
+
 
 
 
@@ -40,11 +39,13 @@ formulario de entrada de denuncias de maltrato animal
     </paper-radio-group>
 </template>
     
-    <p hidden$="{{display}}">Próxima Revisão: {{reviewDate}}</p>
+    <p hidden$="{{display}}">Próxima Revisão: {{formattedDate}}</p>
+
+
    
 <paper-button raised id="savePeriod">salvar</paper-button>
 <paper-button raised id="editPeriod">editar</paper-button>
-
+<!-- enlace con el método 'save' de <bi-editor> --> 
 <iron-signals on-iron-signal-cleardate="editExpiration"></iron-signals>
 
 
@@ -65,8 +66,13 @@ formulario de entrada de denuncias de maltrato animal
             type:Date,
             notify:true
          },
-
+         // generamos la variable intermedia 'reviewDate' porque si aplicamos directamente a la variable 'expireDate' toLocaleString() la alteraremos
           reviewDate:{
+            type:Date,
+            notify:true
+         },
+         // fecha formateada a mostrar en el editor del vencimiento
+         formattedDate:{
             type:Date,
             notify:true
          },
@@ -107,18 +113,19 @@ formulario de entrada de denuncias de maltrato animal
             alert ('favor seleciona um periodo');
             return false
           };
-          var timestamp = Date.now();
-          this.expireDate =  new Date();
           
+          this.expireDate =  new Date();     
 
           var dayOfMonth = this.expireDate.getDate();        
-         this.expireDate.setDate(dayOfMonth + this.period);
+          this.expireDate.setDate(dayOfMonth + this.period);
           var monthUpdate = this.expireDate.getMonth();
           // enlace con el componente <bi-editor>
           this.fire('monthUpdate',monthUpdate);
+          // generamos la variable intermedia 'reviewDate' porque si aplicamos directamente a la variable 'expireDate' toLocaleString() la alteraremos
           this.reviewDate = this.expireDate;
-         
-         // console.log(this.formattedDate);
+          // formatamos la fecha y excluímos la hora
+         this.formattedDate = this.reviewDate.toLocaleString().split(' ')[0];  
+       
           // una vez guardado la fecha de vto, se oculta el botón de guardar y se muestra el de editar la fecha. Tambíen se oculta el radio-group
           this.$.editPeriod.style.display = "inline-flex";
           this.$.savePeriod.style.display = "none";
@@ -133,9 +140,7 @@ formulario de entrada de denuncias de maltrato animal
           this.$.editPeriod.style.display = "none";
           this.$.savePeriod.style.display = "inline-flex";
           this.display = true;
-      },
-
-      
+      },   
 
 
    

@@ -11,6 +11,7 @@
 <!-- custom components -->
 <link rel="import" href="company-setor.html">
 <link rel="import" href="set-update.html">
+<link rel="import" href="set-profile.html">
 
 
 
@@ -51,21 +52,21 @@ formulario de entrada de denuncias de maltrato animal
     </paper-textarea>
 
 
-  <h3 on-tap="toggleUpdate">1.Próxima Revisão</h3>
+  <h3 on-tap="toggleUpdate">1.Próxima Revisão<iron-icon icon="arrow-drop-down"></iron-icon></h3>
     <iron-collapse id="updateCollapse">
       <div class="collapse-content">
         <set-update review-date="{{company.expireDate}}"></set-update>
       </div>
     </iron-collapse>
 
-  <h3 on-tap="toggleProfile">2.Perfil</h3>
+  <h3 on-tap="toggleProfile">2.Perfil<iron-icon icon="arrow-drop-down"></iron-icon></h3>
     <iron-collapse id="profileCollapse">
       <div class="collapse-content">
-        Normal Acompanhamento Preventivo Acordo
+        <set-profile profile="{{company.profile}}"></set-profile>
       </div>
     </iron-collapse>
 
-   <h3 on-tap="toggleFinanc">3.Dados Financeiros</h3>
+   <h3 on-tap="toggleFinanc">3.Dados Financeiros<iron-icon icon="arrow-drop-down"></iron-icon></h3>
     <iron-collapse id="financCollapse">
       <div class="collapse-content">
         Faturamento %Ebitda Risco Interno
@@ -93,9 +94,10 @@ formulario de entrada de denuncias de maltrato animal
           value:function(){
             return{        
               identificador:'',
-              fecha:new Date().toLocaleString(),
+              profile:'',
               descripcion:'',
-              expireDate:''
+              expireDate:'',
+
               
               }
             }      

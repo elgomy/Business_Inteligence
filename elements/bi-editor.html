@@ -7,10 +7,12 @@
 <!-- paper elements-->
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../bower_components/paper-toast/paper-toast.html">
+
 <!-- company elements -->
 <link rel="import" href="company-bo.html">
 <link rel="import" href="company-edit.html">
 <link rel="import" href="company-list.html">
+<link rel="import" href="company-calendar.html">
 <!-- behaviors-->
 <link rel="import" href="../behaviors/input-behavior.html">
 <link rel="import" href="../behaviors/BI-behavior.html">
@@ -54,6 +56,17 @@ editor con el que vamos poder guardar los datos de entrada de los Grupos
             data="{{calendar}}">
     </firebase-query>
 
+
+     <!-- path del calendario-->
+     <firebase-query
+            id="queryCalendar"
+            app-name="form-polymerfire"
+            path="/agenda/[[user.uid]]/5"
+            data="{{calendario}}">
+    </firebase-query>
+
+      
+      
      
 
     <iron-signals on-iron-signal-delete="removeItem"></iron-signals>
@@ -73,8 +86,15 @@ editor con el que vamos poder guardar los datos de entrada de los Grupos
 
       <div name="list">
       <paper-fab icon="add" id="createcompany"></paper-fab>
-          <company-list data="[[data]]" maio="[[maio]]" company="[[company]]"></company-list>  
+
+     
+
+
+          <company-list data="[[data]]" company="[[company]]"></company-list>  
+          
       </div>
+
+  
 
       <!-- editor de Grupos -->
 
@@ -103,6 +123,8 @@ editor con el que vamos poder guardar los datos de entrada de los Grupos
          atualMonth:Number,
         // key del grupo dentro del path de la Agenda
          calendarKey:String,
+
+         
         
          section:{
             type:String,
@@ -121,9 +143,11 @@ editor con el que vamos poder guardar los datos de entrada de los Grupos
          'closeEditor':'backList',
          'clearIcon.tap': 'backList',
          'monthUpdate': 'setMonth',
-         'rescheduleEdit': 'reschedule',
+         'rescheduleEdit': 'reschedule',      
        
      },
+
+    
 
      // enlace con el componente <set-update>. Month será el filtro para guardar la fecha de la revisión en el mes correspondiente en la agenda de Firebase
      setMonth:function(e,monthUpdate){
@@ -144,27 +168,27 @@ editor con el que vamos poder guardar los datos de entrada de los Grupos
           var calendarData = {
                 identificador: this.company.identificador,
                 expireDate: this.company.expireDate
-          };
-          
+          };    
            // generamos una key (id) para el Grupo que será la misma para las 2 ramas
-           var newCompanyKey = this.$.query.ref.push().key;
+          var newCompanyKey = this.$.query.ref.push().key;
             // subida de datos al path de la Agenda
-            var calendarUpdates = {};
+          var calendarUpdates = {};
             // representa al path          =   datos a subir al path
-            calendarUpdates[newCompanyKey] = calendarData;
+          calendarUpdates[newCompanyKey] = calendarData;
             // subida de datos al path de los Grupos
-            var companyUpdates = {};
-            companyUpdates[newCompanyKey] = this.company;
+          var companyUpdates = {};
+          companyUpdates[newCompanyKey] = this.company;
 
             // tenemos que usar 'update' en lugar de 'push' porque este último siempre genera una 'key', por lo que se generarían 2 keys
-           this.$.queryUpdate.ref.update(calendarUpdates)
+          this.$.queryUpdate.ref.update(calendarUpdates)
             .catch(function(error){
-                this.fire('negative-toast', 'error: ' + error);
-
+              this.fire('negative-toast', 'error: ' + error);
             }.bind(this));
 
           this.$.query.ref.update(companyUpdates)
             .then(function(){
+
+              
 
                 this.fire('positive-toast', 'Grupo cadastrado');
                     // después de introducir los valores en los input se limpia el texto. Fijamos tanto la fecha como la dirección, ya que si los limpiamos el sistema no genera de nuevo esos valores. Behavior 'animilia-behavior'
@@ -189,7 +213,6 @@ editor con el que vamos poder guardar los datos de entrada de los Grupos
 
     // borrado del grupo clickado en la lista. Enlace con el componente <company-list>
     removeItem:function(e,companyItem){
-
       // BI-behavior (atribuimos a la propiedad "month" del path de la Agenda el valor del mes para poder hacer el borrado)
        this.monthCalendar(companyItem.expireDate);
       // borramos los datos de la empresa en los dos paths de Firebase simultaneamente
@@ -202,19 +225,15 @@ editor con el que vamos poder guardar los datos de entrada de los Grupos
     editcompany:function(e,companyItem){
 
       this.section = 'editor';
-
       // componente <company-edit>
       this.$.editor.item = companyItem; // a la propiedad item (objeto) del componente <company-edit> le inyectamos el objeto 'companyItem' que recibimos que recibimos desde el componente <company-list>. Lo mismo para la propiedad 'path'
       this.$.editor.path = this.$.query.ref.child(companyItem.$key); 
-
       // es necesario que asignemos un valor a 'month' porque si no 'ref' nos dará 'undefined'
-      
+      // es necesario que parseemos la propiedad 'expireDate' porque la recibimos como un String, y necesitaremos manejar fechas  
       var timestamp = Date.parse(companyItem.expireDate);
-        
       this.month = new Date(timestamp).getMonth(); 
-
       // 'atualMonth' lo usaremos para definir el path actual a ser borrado con la función 'reschedule' cuando editemos la fecha de vencimiento (expireDate)
-      this.atualMonth = new Date(timestamp).getMonth();
+      this.atualMonth = new Date(timestamp).getMonth();     
       // operativa para tener acceso a la key del Grupo en la Agenda, que serà usada en la función reschedule para reagendar el vencimiento
       this.$.editor.pathCalendar =  this.$.queryUpdate.ref.child(companyItem.$key);
       this.calendarKey = this.$.editor.pathCalendar.path.o[3];
@@ -252,7 +271,9 @@ editor con el que vamos poder guardar los datos de entrada de los Grupos
       window.location.href = "mailto:mail@example.org"
                           +"?subject="+"test"
                           +"&body="+companyItem.descripcion
-    }
+    },
+
+   
     
 
     });

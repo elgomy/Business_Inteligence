@@ -5,6 +5,11 @@
 <link rel="import" href="company-bo.html">
 
 
+<link rel="import" href="../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../bower_components/paper-item/paper-item-body.html">
+<link rel="import" href="../bower_components/iron-icons/editor-icons.html">
+
+
 <!--
 `company-list-BI`
 lista de denuncias creadas en Animilia y almacenadas en Firebase
@@ -23,11 +28,20 @@ lista de denuncias creadas en Animilia y almacenadas en Firebase
           margin-bottom:10px;
       }
     </style>
-    <h3>maio</h3>
-   <template is="dom-repeat" items="[[maio]]" as="agenda">  
-   <p>[[agenda.identificador]]</p>
-   </template>
-  <h3>Lista Empresas</h3>
+
+ <template is="dom-repeat" items="[[data]]" as="company">  
+    <paper-item>
+  <paper-item-body two-line>
+    <div>[[company.identificador]]</div>
+    <div secondary>[[company.expireDate]]</div>
+  </paper-item-body>
+  <iron-icon icon="editor:mode-edit" company="[[company]]" on-tap="edition"></iron-icon>
+  <iron-icon icon="clear" company="[[company]]" on-tap="remove" alt="deletar"></iron-icon>
+</paper-item>
+</template>
+ 
+  
+  <!--
     <template is="dom-repeat" items="[[data]]" as="company">    
         
     <paper-card 
@@ -47,7 +61,7 @@ lista de denuncias creadas en Animilia y almacenadas en Firebase
     </div>
     </paper-card>  
 
-  </template>
+  </template>  -->
 
   </template>
 
@@ -58,7 +72,7 @@ lista de denuncias creadas en Animilia y almacenadas en Firebase
 
       properties:{
         data:Object,
-        maio:Object,
+       
         company:Object
       },
 
