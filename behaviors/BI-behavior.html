@@ -27,14 +27,21 @@
     },
 
 
-    monthCalendar: function(date){
+  setPathdate:function(date){
 
-      var timestamp = Date.parse(date);
-      var formattedDate = new Date(timestamp).getMonth();
-      this.month = formattedDate;
+      var dateString = date;
+      var dateParts = dateString.split("/");
      
+      var dateObject = new Date(dateParts[2], dateParts[1] - 1, dateParts[0]); // month is 0-based
+      
+      this.month = dateObject.getMonth(); 
+      this.year = dateObject.getFullYear(); 
 
-    }
+        // 'atualMonth' lo usaremos para definir el path actual a ser borrado con la función 'reschedule' cuando editemos la fecha de vencimiento (expireDate)
+     this.atualMonth = dateObject.getMonth();   
+      this.atualYear = dateObject.getFullYear();
+
+  }
 
     
 

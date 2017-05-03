@@ -4,6 +4,7 @@
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../bower_components/paper-radio-button/paper-radio-button.html">
 <link rel="import" href="../bower_components/paper-radio-group/paper-radio-group.html">
+<link rel="import" href="../bower_components/iron-signals/iron-signals.html">
 
 
 
@@ -47,6 +48,7 @@ formulario de entrada de denuncias de maltrato animal
 <paper-button raised id="editPeriod">editar</paper-button>
 <!-- enlace con el método 'save' de <bi-editor> --> 
 <iron-signals on-iron-signal-cleardate="editExpiration"></iron-signals>
+<iron-signals on-iron-signal-firebasedate="editorExpiration"></iron-signals>
 
 
 
@@ -98,6 +100,12 @@ formulario de entrada de denuncias de maltrato animal
          'editPeriod.tap': 'editExpiration'
        },
 
+       editorExpiration:function(){
+        
+          this.$.editPeriod.style.display = "inline-flex";
+          this.$.savePeriod.style.display = "none";
+          this.display = false;
+       },
    
       // función que asocia el valor del 'radio-button' a la propiedad 'period'
       setPeriod:function(e){
@@ -118,9 +126,13 @@ formulario de entrada de denuncias de maltrato animal
 
           var dayOfMonth = this.expireDate.getDate();        
           this.expireDate.setDate(dayOfMonth + this.period);
-          var monthUpdate = this.expireDate.getMonth();
+          
+          var dateUpdate = {
+                  month: this.expireDate.getMonth(),
+                  year: this.expireDate.getFullYear()
+          };
           // enlace con el componente <bi-editor>
-          this.fire('monthUpdate',monthUpdate);
+          this.fire('setUpdate',dateUpdate);
           // generamos la variable intermedia 'reviewDate' porque si aplicamos directamente a la variable 'expireDate' toLocaleString() la alteraremos
           this.reviewDate = this.expireDate;
           // formatamos la fecha y excluímos la hora

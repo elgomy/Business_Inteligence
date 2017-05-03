@@ -1,18 +1,14 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
-<link rel="import" href="../bower_components/polymerfire/polymerfire.html">
-
+<link rel="import" href="../bower_components/paper-card/paper-card.html">
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
-<link rel="import" href="../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
-<link rel="import" href="../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../behaviors/BI-behavior.html">
+<link rel="import" href="company-bo.html">
+
+
 <link rel="import" href="../bower_components/paper-item/paper-item.html">
 <link rel="import" href="../bower_components/paper-item/paper-item-body.html">
-<link rel="import" href="../bower_components/paper-card/paper-card.html">
-<link rel="import" href="../bower_components/paper-badge/paper-badge.html">
-<link rel="import" href="../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../bower_components/iron-icons/editor-icons.html">
 
-
-<link rel="import" href="../bower_components/fullcalendar-calendar/fullcalendar-calendar.html">
-<link rel="import" href="../bower_components/fullcalendar-calendar/fullcalendar-theme.html">
 
 
 
@@ -31,15 +27,16 @@
             user="{{user}}">
     </firebase-auth>
 
-    <!-- path del calendario-->
-     <firebase-query
-            id="queryCalendar"
-            app-name="form-polymerfire"
-            path="/agenda/[[user.uid]]/[[mes]]"
-            data="{{calendario}}">
-    </firebase-query>
+  
 
       <firebase-query
+            id="queryCalendar"
+            app-name="form-polymerfire"
+            path="/agenda/[[user.uid]]/4"
+            data="{{may}}">
+    </firebase-query>
+
+     <firebase-query
             id="queryCalendar"
             app-name="form-polymerfire"
             path="/agenda/[[user.uid]]/5"
@@ -47,60 +44,31 @@
     </firebase-query>
 
 
-
-
-<paper-button raised on-tap="meses">meses</paper-button>
-
-<paper-dropdown-menu label="Meses">
-  <paper-listbox class="dropdown-content" selected="1">
-     <paper-item>
-        <div style="display:inline-block">
-          <span>Janeiro</span>
-        <paper-badge label="{{monthBadge}}"></paper-badge>
-      </div>
-
-    </paper-item>
-     <paper-item>
-
-    <div style="display:inline-block">
-          <span>Fevereiro</span>
-        <paper-badge label="{{monthBadge}}"></paper-badge>
-      </div>
-
-    </paper-item>
-
-      <paper-item>
-        <div style="display:inline-block">
-          <span>Março</span>
-        <paper-badge label="{{monthBadge}}"></paper-badge>
-      </div>
-    </paper-item>
+<h2>Maio</h2>
+ <template is="dom-repeat" items="[[may]]" as="company">  
 
     <paper-item>
-      <div style="display:inline-block">
-          <span>Abril</span>
-        <paper-badge label="{{monthBadge}}"></paper-badge>
-      </div>
-    </paper-item>
+  <paper-item-body two-line>
+    <div>[[company.identificador]]</div>
+    <div secondary>Revisao: [[company.expireDate]]</div>
+  </paper-item-body>
+  <iron-icon icon="editor:mode-edit" company="[[company]]" on-tap="edition"></iron-icon>
+  <iron-icon icon="clear" company="[[company]]" on-tap="remove" alt="deletar"></iron-icon>
+</paper-item>
+</template>
 
-      <paper-item>
-      <div style="display:inline-block">
-          <span>Maio</span>
-        <paper-badge label="{{monthBadge}}"></paper-badge>
-      </div>
-    </paper-item>
+<h2>Junho</h2>
+ <template is="dom-repeat" items="[[june]]" as="company">  
 
     <paper-item>
-    <div style="display:inline-block">
-          <span>Junho</span>
-        <paper-badge label="{{monthBadge}}"></paper-badge>
-      </div>
-  </paper-item>
-
-  </paper-listbox>
-</paper-dropdown-menu>
-
-
+  <paper-item-body two-line>
+    <div>[[company.identificador]]</div>
+    <div secondary>Revisao: [[company.expireDate]]</div>
+  </paper-item-body>
+  <iron-icon icon="editor:mode-edit" company="[[company]]" on-tap="edition"></iron-icon>
+  <iron-icon icon="clear" company="[[company]]" on-tap="remove" alt="deletar"></iron-icon>
+</paper-item>
+</template>
 
 
 
@@ -108,210 +76,11 @@
 
 
 
-   <paper-listbox>
-    <paper-item>
-        <div style="display:inline-block">
-          <span>Janeiro</span>
-        <paper-badge label="{{monthBadge}}"></paper-badge>
-      </div>
 
-    </paper-item>
-    <paper-item>
-
-    <div style="display:inline-block">
-          <span>Fevereiro</span>
-        <paper-badge label="{{monthBadge}}"></paper-badge>
-      </div>
-
-    </paper-item>
-    <paper-item>
-        <div style="display:inline-block">
-          <span>Março</span>
-        <paper-badge label="{{monthBadge}}"></paper-badge>
-      </div>
-    </paper-item>
-    <paper-item>
-      <div style="display:inline-block">
-          <span>Abril</span>
-        <paper-badge label="{{monthBadge}}"></paper-badge>
-      </div>
-    </paper-item>
-    <paper-item>
-      <div style="display:inline-block">
-          <span>Maio</span>
-        <paper-badge label="{{monthBadge}}"></paper-badge>
-      </div>
-    </paper-item>
-    <paper-item>
-    <div style="display:inline-block">
-          <span>Junho</span>
-        <paper-badge label="{{monthBadge}}"></paper-badge>
-      </div>
-  </paper-item>
-  
-
-  
-    <paper-item>
-        <div style="display:inline-block">
-          <span>Julho</span>
-        <paper-badge label="{{monthBadge}}"></paper-badge>
-      </div>
-
-    </paper-item>
-    <paper-item>
-      <div style="display:inline-block">
-          <span>Agosto</span>
-        <paper-badge label="{{monthBadge}}"></paper-badge>
-      </div>
-      </paper-item>
-    <paper-item>
-      <div style="display:inline-block">
-          <span>Setembro</span>
-        <paper-badge label="{{monthBadge}}"></paper-badge>
-      </div>
-    </paper-item>
-    <paper-item>
-      <div style="display:inline-block">
-          <span>Outubro</span>
-        <paper-badge label="{{monthBadge}}"></paper-badge>
-      </div>
-    </paper-item>
-    <paper-item>
-    <div style="display:inline-block">
-          <span>Novembro</span>
-        <paper-badge label="{{monthBadge}}"></paper-badge>
-      </div>
-      </paper-item>
-    <paper-item>
-      <div style="display:inline-block">
-          <span>Dezembro</span>
-        <paper-badge label="{{monthBadge}}"></paper-badge>
-      </div>
-    </paper-item>
-  </paper-listbox>
-
- <iron-pages id="monthPages" selected="{{monthSection}}" attr-for-selected="name">
-    
-    <div name="january">
-      <iron-icon icon="clear" on-tap="close"></iron-icon> 
-      Janeiro
-      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Animi ipsam quidem quae accusamus, inventore doloribus recusandae aperiam facilis, culpa, impedit non! Numquam, velit! Minima maxime, eius iusto! Animi suscipit, quaerat!</p>
-    </div>  
-    <div name="february">
-      <iron-icon icon="clear" on-tap="close"></iron-icon> 
-      Fevereiro
-    </div> 
-    <div name="march">
-      <iron-icon icon="clear" on-tap="close"></iron-icon> 
-      Março
-    </div> 
-    <div name="april">
-      <iron-icon icon="clear" on-tap="close"></iron-icon> 
-      Abril
-    </div> 
-    <div name="may">
-      <iron-icon icon="clear" on-tap="close"></iron-icon> 
-      Maio
-    </div> 
-    <div name="june">
-      <iron-icon icon="clear" on-tap="close"></iron-icon> 
-      Junho
-
-        <template is="dom-repeat" items="[[june]]" as="company">   
-    <paper-item>
-        <paper-item-body two-line>
-        <div>[[company.identificador]]</div>
-          <div secondary>Data Revisao: [[company.expireDate]]</div>       
-          </paper-item-body>     
-      </paper-item>   
-  </template> 
-    </div> 
-    <div name="july">
-      <iron-icon icon="clear" on-tap="close"></iron-icon> 
-      Julho
-    </div> 
-    <div name="august">
-      <iron-icon icon="clear" on-tap="close"></iron-icon> 
-      Agosto
-    </div> 
-    <div name="setember">
-      <iron-icon icon="clear" on-tap="close"></iron-icon> 
-      Setembro
-    </div> 
-    <div name="october">
-      <iron-icon icon="clear" on-tap="close"></iron-icon> 
-      Outubro
-    </div> 
-    <div name="november">
-      <iron-icon icon="clear" on-tap="close"></iron-icon> 
-       Novembro
-    </div> 
-    <div name="december">
-      <iron-icon icon="clear" on-tap="close"></iron-icon> 
-      Dezembro
-    </div>    
-
-</iron-pages>
-   
-<!--
-    <paper-dropdown-menu label="Seleciona o mês">
-  <paper-listbox class="dropdown-content" selected="{{atualMonth}}" on-iron-select="selectMonht">
-    <paper-item name="janeiro">janeiro</paper-item>
-    <paper-item name="fevereiro">fevereiro</paper-item>
-    <paper-item name="março">março</paper-item>
-    <paper-item name="abril">abril</paper-item>
-    <paper-item name="maio">maio</paper-item>
-    <paper-item name="junho">junho</paper-item>
-    <paper-item name="julho">julho</paper-item>
-    <paper-item name="agosto">agosto</paper-item>
-    <paper-item name="setembro">setembro</paper-item>
-    <paper-item name="outubro">outubro</paper-item>
-    <paper-item name="novembro">novembro</paper-item>
-    <paper-item name="dezembro">dezembro</paper-item>
-  </paper-listbox>
-</paper-dropdown-menu>  -->
-
-
- 
-  <template is="dom-repeat" items="[[calendario]]" as="company">   
-    <paper-item>
-        <paper-item-body two-line>
-        <div>[[company.identificador]]</div>
-          <div secondary>Data Revisao: [[company.expireDate]]</div>       
-          </paper-item-body>     
-      </paper-item>   
-  </template> 
-
-
-  <!--  <template is="dom-repeat" items="[[miArray]]">   
-
-
-     <paper-item>
-        <paper-item-body two-line>
-        <div>[[item.grupo]]</div>
-         <div secondary>Data Revisao: [[company.expireDate]]</div> 
-         <div secondary>Data Revisao: [[item.vencimiento]]</div> 
-          </paper-item-body>
-       
-      </paper-item> 
-        
-   
-
-  </template> 
-
-<paper-button raised on-tap="test">test</paper-button> -->
 
 
 
   
-<!--
-<fullcalendar-calendar 
-    options=
-    id="calendar"
-   on-day-click="handleEventClick">
-     
-   </fullcalendar-calendar> -->
-
 
       
 
@@ -322,99 +91,33 @@
 
       is: 'company-calendar',
 
-      properties: {
-          mes:{
-            type:Number,
-          },
-          atualDate:{
-            type:Date,
-            value: new Date()
-          },
-          atualMonth:Number,
-          calendario:Array,
-          miArray:{
-          type:Array,
-          value: function(){return[]}
-        },
-        vencimiento:Object,
-        june:{
-          type:Object,
-          observer: 'dataChanged'
-        },
-        monthBadge:Number
+       properties:{
+        may:Object,
+        june:Object,
        
+        company:Object
       },
 
-      
+      behaviors: [Polymer.BIBehavior],
 
-      listbox:function(){
-        alert('hola')
+       // el evento 'delete' se recibe en el componente <my-app> para poder abrir el 'dialog' 
+      remove:function(e) {   
+        var companyItem = e.currentTarget.company;
+
+        this.fire('delete', companyItem) 
+      },
+      // enlace con <bi-editor>
+      edition:function(e) {    
+        var companyItem = e.currentTarget.company;
+        this.fire('edition', companyItem);
+
+        console.log(companyItem) 
       },
 
- //   setMes:function(){
- //     this.fire('setMes',this.atualMonth)
- //   },
-
-    selectMonht:function(){
-      this.mes = this.atualMonth
-     },
-
-     viewGroups:function(e){
-        this.monthSection = e.currentTarget.id;
-        console.log(e.currentTarget.id);
-        this.$.grid.style.display = "none",
-        this.$.monthPages.style.display = "inline"
-     },
-
-     close:function(){
-      
-        this.$.grid.style.display = "inline";
-        this.$.monthPages.style.display = "none"
+      send:function(e) {    
+        var companyItem = e.currentTarget.company;
+        this.fire('send', companyItem) 
       },
-
-      dataChanged: function (newData, oldData) {
-        
-          console.log(newData.length);
-          this.monthBadge = this.june.length
-        
-        
-      //  this.monthBadge = '3'
-      },
-
-      meses:function(){
-        console.log(this.june.length);
-        this.janBadge = this.june.length
-      },
-
-  
-    ready:function(){
-      
-      this.atualMonth = this.atualDate.getMonth()
-     
-    },
-
-    test:function(){
-      for(var i=0; i < this.calendario.length; i++){
-        // console.log(this.calendario[i].expireDate)
-        var formattedDates = Date.parse(this.calendario[i].expireDate.toLocaleString().split(' ')[0]);
-       // console.log(formattedDates);
-       var test = {
-          'grupo': this.calendario[i].identificador,
-          'vencimiento': new Date(
-                          Date.parse(this.calendario[i].expireDate.toLocaleString().split(' ')[0])
-                          ).toLocaleString().split(' ')[0],
-
-          };
-        
-           
-       // var fecha = new Date(formattedDates);
-       // var fechaFormatada = fecha.toLocaleString().split(' ')[0];
-      //  console.log(fechaFormatada);
-      //  this.vencimiento = {'vencimiento': fechaFormatada[i]};
-        this.push('miArray',test);
-        
-      }
-    },
 
  
 

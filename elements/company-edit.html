@@ -43,6 +43,7 @@ formulario de entrada de denuncias de maltrato animal
          path:Object,
          pathCalendar: Object,
          atualMonth:Number,
+         atualYear:Number
         },   
 
        behaviors: [Polymer.inputBehavior],
@@ -54,12 +55,12 @@ formulario de entrada de denuncias de maltrato animal
 
         // método para guardar los datos del Grupo en Firebase una vez editado. En este caso editamos las propiedades 'identificador' y 'descripcion'
       save:function(){ 
-       
+        console.log(this.item);
           var itemUpdate = {
                 identificador: this.item.identificador,
                 descripcion: this.item.descripcion,
                 expireDate: this.item.expireDate,
-                profile:this.item.profile
+              //  profile:this.item.profile
           };
 
           var calendarUpdate = {
