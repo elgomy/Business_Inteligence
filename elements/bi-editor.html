@@ -7,7 +7,8 @@
 <!-- paper elements-->
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../bower_components/paper-toast/paper-toast.html">
-
+<link rel="import" href="../bower_components/paper-search/paper-search-bar.html">
+<link rel="import" href="../bower_components/paper-toggle-button/paper-toggle-button.html">
 <!-- company elements -->
 <link rel="import" href="company-bo.html">
 <link rel="import" href="company-edit.html">
@@ -40,13 +41,18 @@ editor con el que vamos poder guardar los datos de entrada de los Grupos
             user="{{user}}">
     </firebase-auth>
 
+
+
     <!-- path de los Grupos -->
     <firebase-query
             id="query"
             app-name="form-polymerfire"
             path="/grupos/[[user.uid]]"
-            data="{{data}}">
-    </firebase-query>
+            data="{{data}}"
+            order-by-child="{{filter}}">
+    </firebase-query> 
+
+    
 
     
     <firebase-query
@@ -77,8 +83,15 @@ editor con el que vamos poder guardar los datos de entrada de los Grupos
       <div name="list">
       <paper-fab icon="add" id="createcompany"></paper-fab>
 
-     
+           <paper-search-bar 
+        query="{{querySearch}}" 
+        placeholder="Nome do Grupo"
+        on-paper-search-search="search"
+        hide-filter-button>
+    </paper-search-bar> 
 
+       <paper-toggle-button on-change="toggle">data revisao</paper-toggle-button>
+      
 
           <company-list data="[[data]]" company="[[company]]"></company-list>  
           
@@ -93,6 +106,8 @@ editor con el que vamos poder guardar los datos de entrada de los Grupos
       </div>
           
    </iron-pages>
+
+  
 
   </template>
 
@@ -115,6 +130,10 @@ editor con el que vamos poder guardar los datos de entrada de los Grupos
          atualYear:Number,
         // key del grupo dentro del path de la Agenda
          calendarKey:String,
+         filter:{
+          type: String,
+          value:'identificador',
+        },
 
          
         
@@ -138,8 +157,17 @@ editor con el que vamos poder guardar los datos de entrada de los Grupos
          'rescheduleEdit': 'reschedule',      
        
      },
+     // filtrado de los grupos por orden alfabético del identificador o por fecha de revisiòn 
+     toggle:function(e){
+      if(e.currentTarget.checked){
+        
+        this.filter = 'expireStamp'
+      }
+      else{
+        this.filter = 'identificador'
+      }
+     },
 
-    
 
      // enlace con el componente <set-update>. Month y year serán los filtros para guardar la fecha de la revisión en el mes correspondiente en la agenda de Firebase
      setDate:function(e,dateUpdate){
@@ -154,13 +182,16 @@ editor con el que vamos poder guardar los datos de entrada de los Grupos
         if(!this.user){
           this.fire('negative-toast', 'você deve estar autenticado');
           return false;
-        }      
+        }  
+   
    
         if(this.company.identificador && this.company.descripcion && this.company.expireDate){
 
+          
           var calendarData = {
                 identificador: this.company.identificador,
-                expireDate: this.company.expireDate
+                expireDate: this.company.expireDate,
+                timestamp: this.company.expireStamp,
           };    
            // generamos una key (id) para el Grupo que será la misma para las 2 ramas
           var newCompanyKey = this.$.query.ref.push().key;
@@ -180,8 +211,6 @@ editor con el que vamos poder guardar los datos de entrada de los Grupos
 
           this.$.query.ref.update(companyUpdates)
             .then(function(){
-
-              
 
                 this.fire('positive-toast', 'Grupo cadastrado');
                     // después de introducir los valores en los input se limpia el texto. Fijamos tanto la fecha como la dirección, ya que si los limpiamos el sistema no genera de nuevo esos valores. Behavior 'animilia-behavior'
@@ -232,7 +261,6 @@ editor con el que vamos poder guardar los datos de entrada de los Grupos
       // operativa para tener acceso a la key del Grupo en la Agenda, que serà usada en la función reschedule para reagendar el vencimiento
       
       this.$.editor.pathCalendar =  this.$.queryUpdate.ref.child(companyItem.$key);
-
       this.calendarKey = this.$.editor.pathCalendar.path.o[4];
       console.log(this.calendarKey);
       this.fire('iron-signal', {name: 'firebasedate'});
@@ -254,6 +282,8 @@ editor con el que vamos poder guardar los datos de entrada de los Grupos
               this.month = this.atualMonth;
               this.year = this.atualYear;
               this.$.queryUpdate.ref.child(this.calendarKey).remove();
+               // enlace con <set-update> para limpiar el vencimiento seleccionado cuando se guarde un grupo
+                this.fire('iron-signal', {name: 'cleardate'});
           }.bind(this))
           .catch(function(error){
                   this.fire('negative-toast', 'error: ' + error);
@@ -266,6 +296,10 @@ editor con el que vamos poder guardar los datos de entrada de los Grupos
 
     backList:function(){
       this.section = 'list'
+    },
+
+    search:function(){
+      this.query = this.querySearch
     },
 
 

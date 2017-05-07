@@ -58,8 +58,9 @@ formulario de entrada de denuncias de maltrato animal
   <h3 on-tap="toggleUpdate">1.Próxima Revisão<iron-icon icon="arrow-drop-down"></iron-icon></h3>
     <iron-collapse id="updateCollapse">
       <div class="collapse-content">
-        <set-update formatted-date="{{company.expireDate}}"></set-update>
+        <set-update formatted-date="{{company.expireDate}}" expire-Stamp="{{company.expireStamp}}"></set-update>
       </div>
+      
     </iron-collapse>
 
   <h3 on-tap="toggleProfile">2.Perfil<iron-icon icon="arrow-drop-down"></iron-icon></h3>
@@ -100,6 +101,8 @@ formulario de entrada de denuncias de maltrato animal
             //  profile:'',
               descripcion:'',
               expireDate:'',
+              expireStamp:''
+
 
               
               }

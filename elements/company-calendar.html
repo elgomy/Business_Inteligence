@@ -1,25 +1,36 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/polymerfire/polymerfire.html">
 <link rel="import" href="../bower_components/paper-card/paper-card.html">
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../behaviors/BI-behavior.html">
-<link rel="import" href="company-bo.html">
 
 
 <link rel="import" href="../bower_components/paper-item/paper-item.html">
 <link rel="import" href="../bower_components/paper-item/paper-item-body.html">
-<link rel="import" href="../bower_components/iron-icons/editor-icons.html">
-
-
-
-
+<link rel="import" href="../bower_components/app-layout/app-layout.html">
+<link rel="import" href="../bower_components/app-layout/app-grid/app-grid-style.html">
 
 
 <dom-module id="company-calendar">
   <template>
 
-    <style>
-    
-  </style> 
+    <style include="app-grid-style">
+    :host {
+      --app-grid-columns: 3;
+      --app-grid-item-height: 60px;
+    }
+
+    ul {
+      padding: 0;
+      list-style: none;
+    }
+
+    .item {
+      background-color: white;
+      border: solid 1px;
+      text-align: center;
+    }
+  </style>
 
      <firebase-auth 
             app-name="form-polymerfire"
@@ -32,55 +43,77 @@
       <firebase-query
             id="queryCalendar"
             app-name="form-polymerfire"
-            path="/agenda/[[user.uid]]/4"
-            data="{{may}}">
-    </firebase-query>
-
-     <firebase-query
-            id="queryCalendar"
-            app-name="form-polymerfire"
-            path="/agenda/[[user.uid]]/5"
-            data="{{june}}">
+            path="/agenda/[[user.uid]]/2017/5"
+            data="{{calendar}}">
     </firebase-query>
 
 
-<h2>Maio</h2>
- <template is="dom-repeat" items="[[may]]" as="company">  
-
-    <paper-item>
-  <paper-item-body two-line>
-    <div>[[company.identificador]]</div>
-    <div secondary>Revisao: [[company.expireDate]]</div>
-  </paper-item-body>
-  <iron-icon icon="editor:mode-edit" company="[[company]]" on-tap="edition"></iron-icon>
-  <iron-icon icon="clear" company="[[company]]" on-tap="remove" alt="deletar"></iron-icon>
-</paper-item>
-</template>
-
-<h2>Junho</h2>
- <template is="dom-repeat" items="[[june]]" as="company">  
-
-    <paper-item>
-  <paper-item-body two-line>
-    <div>[[company.identificador]]</div>
-    <div secondary>Revisao: [[company.expireDate]]</div>
-  </paper-item-body>
-  <iron-icon icon="editor:mode-edit" company="[[company]]" on-tap="edition"></iron-icon>
-  <iron-icon icon="clear" company="[[company]]" on-tap="remove" alt="deletar"></iron-icon>
-</paper-item>
-</template>
-
-
-
-
-
-
-
-
-
-
-
+<paper-card heading="2017" image="" elevation="1" animated-shadow="false">
   
+<ul class="app-grid">
+    <li class="item">Janeiro</li>
+    <li class="item">Fevereiro</li>
+    <li class="item">Março</li>
+  </ul>
+
+  <ul class="app-grid">
+    <li class="item">Abril</li>
+    <li class="item">Maio</li>
+    <li class="item" on-tap="hola" id="2017/5">Junho</li>
+  </ul>
+
+    <ul class="app-grid">
+    <li class="item">Julho</li>
+    <li class="item">Agosto</li>
+    <li class="item" on-tap="hola" id="2017/5">Setembro</li>
+  </ul>
+
+   <ul class="app-grid">
+    <li class="item">Outubro</li>
+    <li class="item">Novembro</li>
+    <li class="item" on-tap="hola" id="2017/5">Dezembro</li>
+  </ul>
+
+  <paper-card heading="2018" image="" elevation="1" animated-shadow="false">
+  
+<ul class="app-grid">
+    <li class="item">Janeiro</li>
+    <li class="item">Fevereiro</li>
+    <li class="item">Março</li>
+  </ul>
+
+  <ul class="app-grid">
+    <li class="item">Abril</li>
+    <li class="item">Maio</li>
+    <li class="item" on-tap="hola" id="2017/5">Junho</li>
+  </ul>
+
+    <ul class="app-grid">
+    <li class="item">Julho</li>
+    <li class="item">Agosto</li>
+    <li class="item" on-tap="hola" id="2017/5">Setembro</li>
+  </ul>
+
+   <ul class="app-grid">
+    <li class="item">Outubro</li>
+    <li class="item">Novembro</li>
+    <li class="item" on-tap="hola" id="2017/5">Dezembro</li>
+  </ul>
+
+</paper-card>
+
+</paper-card>
+
+   <template id="template" is="dom-repeat" items="[[calendar]]" as="company">  
+    <paper-item>
+  <paper-item-body two-line>
+    <div>[[company.identificador]]</div>
+    <div secondary>Revisao: [[company.expireDate]]</div>
+  </paper-item-body>
+  <iron-icon icon="editor:mode-edit" company="[[company]]" on-tap="edition"></iron-icon>
+  <iron-icon icon="clear" company="[[company]]" on-tap="remove" alt="deletar"></iron-icon>
+</paper-item>
+</template>
 
       
 
@@ -92,34 +125,25 @@
       is: 'company-calendar',
 
        properties:{
-        may:Object,
-        june:Object,
-       
-        company:Object
+          date: String,
+          calendar: Object
       },
 
-      behaviors: [Polymer.BIBehavior],
+     hola:function(e){
+      var itemDate = e.currentTarget.id;
+      this.date = itemDate;
+      var updateQuantity = this.calendar.length;
+      console.log(updateQuantity);
+      for (var i in this.calendar){
+        console.log(i.length)
+      }
+      
+     },
 
-       // el evento 'delete' se recibe en el componente <my-app> para poder abrir el 'dialog' 
-      remove:function(e) {   
-        var companyItem = e.currentTarget.company;
-
-        this.fire('delete', companyItem) 
-      },
-      // enlace con <bi-editor>
-      edition:function(e) {    
-        var companyItem = e.currentTarget.company;
-        this.fire('edition', companyItem);
-
-        console.log(companyItem) 
-      },
-
-      send:function(e) {    
-        var companyItem = e.currentTarget.company;
-        this.fire('send', companyItem) 
-      },
-
- 
+     attached:function(){
+       var updateQuantity = this.calendar.length;
+      console.log(updateQuantity);
+     }
 
 
    

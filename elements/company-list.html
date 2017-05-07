@@ -3,6 +3,7 @@
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../behaviors/BI-behavior.html">
 <link rel="import" href="company-bo.html">
+<link rel="import" href="../bower_components/paper-search/paper-search-bar.html">
 
 
 <link rel="import" href="../bower_components/paper-item/paper-item.html">
@@ -35,7 +36,9 @@ lista de denuncias creadas en Animilia y almacenadas en Firebase
       }
     </style>
 
- <template is="dom-repeat" items="[[data]]" as="company">  
+   
+
+ <template id="template" is="dom-repeat" items="[[data]]" as="company">  
     <paper-item>
   <paper-item-body two-line>
     <div>[[company.identificador]]</div>
@@ -99,8 +102,14 @@ lista de denuncias creadas en Animilia y almacenadas en Firebase
       send:function(e) {    
         var companyItem = e.currentTarget.company;
         this.fire('send', companyItem) 
-      },     
+      },  
+
+      june:function(item){
+        return item.identificador == 'a'
+      }
+
     
+
 
     });
   </script>
