@@ -7,7 +7,7 @@
 <!-- paper elements-->
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../bower_components/paper-toast/paper-toast.html">
-<link rel="import" href="../bower_components/paper-search/paper-search-bar.html">
+
 <link rel="import" href="../bower_components/paper-toggle-button/paper-toggle-button.html">
 <!-- company elements -->
 <link rel="import" href="company-bo.html">
@@ -83,14 +83,9 @@ editor con el que vamos poder guardar los datos de entrada de los Grupos
       <div name="list">
       <paper-fab icon="add" id="createcompany"></paper-fab>
 
-           <paper-search-bar 
-        query="{{querySearch}}" 
-        placeholder="Nome do Grupo"
-        on-paper-search-search="search"
-        hide-filter-button>
-    </paper-search-bar> 
+ 
 
-       <paper-toggle-button on-change="toggle">data revisao</paper-toggle-button>
+       <paper-toggle-button on-change="toggle">ordenar pela data da revisao</paper-toggle-button>
       
 
           <company-list data="[[data]]" company="[[company]]"></company-list>  

@@ -136,12 +136,21 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </app-drawer-layout>
 
     <!-- dialog de confirmación de borrado de denúncia -->
-      <paper-dialog modal id="dialog" on-iron-overlay-closed="dialogAccept" company="[[company]]">
+      <paper-dialog modal id="removeDialog" on-iron-overlay-closed="dialogAccept" company="[[company]]">
             <h2>Tem certeza?</h2>
             <p>deletar o Grupo <b>[[company.identificador]]</b></p>
               <div class="buttons">
                 <paper-button dialog-dismiss>Cancelar</paper-button>
                 <paper-button dialog-confirm autofocus>Deletar</paper-button>
+              </div>
+      </paper-dialog>
+
+        <!-- dialog de confirmación del date-picker -->
+      <paper-dialog modal id="filterDialog" on-iron-overlay-closed="filterAccept">         
+            <date-picker start-stamp="{{startStamp}}" end-stamp="{{endStamp}}"></date-picker>
+              <div class="buttons">
+                <paper-button dialog-dismiss>Cancelar</paper-button>
+                <paper-button dialog-confirm autofocus>Filtrar</paper-button>
               </div>
       </paper-dialog>
 
@@ -185,7 +194,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
        listeners:{
          'positive-toast': 'positiveFeedback',
          'negative-toast': 'negativeFeedback',
-         'delete': 'removecompany',
+         'delete': 'removeCompany',
+         'filterDialog': 'filter',
          'exitIcon.tap': 'exit',
         
          },
@@ -215,17 +225,33 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       },
 
       // enlace con el componente <company-list-BI>
-      removecompany:function(e,companyItem){
-        this.$.dialog.open();
+      removeCompany:function(e,companyItem){
+        this.$.removeDialog.open();
         this.company = companyItem;
         
       },
+      // dialog del 'date-picker'
+      filter:function(){
+        this.$.filterDialog.open();
+      },
 
-      // enlace con el componente <editor-animilia>
+      // enlace con el componente <bi-editor>
      dialogAccept:function(e){
         if (e.detail.confirmed){
           var companyItem = e.currentTarget.company;
           this.fire('iron-signal', {name: 'delete', data: companyItem});
+        }       
+      },
+      // enlace con el componente <company-list>
+      filterAccept:function(e){
+        if (e.detail.confirmed){
+          console.log(this.startStamp);
+          var period = {
+                startStamp: this.startStamp,
+                endStamp: this.endStamp
+            };
+          console.log(period)
+          this.fire('iron-signal', {name: 'filter', data: period});
         }       
       },
 

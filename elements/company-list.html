@@ -1,15 +1,12 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/paper-card/paper-card.html">
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
-<link rel="import" href="../behaviors/BI-behavior.html">
-<link rel="import" href="company-bo.html">
-<link rel="import" href="../bower_components/paper-search/paper-search-bar.html">
 
+<link rel="import" href="../bower_components/iron-signals/iron-signals.html">
 
 <link rel="import" href="../bower_components/paper-item/paper-item.html">
 <link rel="import" href="../bower_components/paper-item/paper-item-body.html">
 <link rel="import" href="../bower_components/iron-icons/editor-icons.html">
-
 
 <!--
 `company-list-BI`
@@ -36,41 +33,24 @@ lista de denuncias creadas en Animilia y almacenadas en Firebase
       }
     </style>
 
-   
 
- <template id="template" is="dom-repeat" items="[[data]]" as="company">  
+<iron-icon icon="event" on-tap="filterDialog"></iron-icon>
+
+<!-- ENLACE CON MY-APP PARA LANZAR EL DIALOG DEL DATE-PICKER -->
+<iron-signals on-iron-signal-filter="fiterPeriod"></iron-signals>
+
+ 
+ <template id="template" is="dom-repeat" items="[[data]]" as="company" filter="{{computeFilter(startStamp,endStamp)}}">  
     <paper-item>
-  <paper-item-body two-line>
-    <div>[[company.identificador]]</div>
-    <div secondary>Revisao: [[company.expireDate]]</div>
-  </paper-item-body>
-  <iron-icon icon="editor:mode-edit" company="[[company]]" on-tap="edition"></iron-icon>
-  <iron-icon icon="clear" company="[[company]]" on-tap="remove" alt="deletar"></iron-icon>
-</paper-item>
+        <paper-item-body two-line>
+          <div>[[company.identificador]]</div>
+          <div secondary>Revisao: [[company.expireDate]]</div>
+        </paper-item-body>
+        <iron-icon icon="editor:mode-edit" company="[[company]]" on-tap="edition"></iron-icon>
+        <iron-icon icon="clear" company="[[company]]" on-tap="remove" alt="deletar"></iron-icon>
+    </paper-item>
 </template>
  
-  
-  <!--
-    <template is="dom-repeat" items="[[data]]" as="company">    
-        
-    <paper-card 
-            heading="[[company.identificador]]" 
-           
-
-            alt="[[company.identificador]]">
-          
-          <div class="card-content">
-            <p>[[company.descripcion]]</p>
-            <p>Data Revisao: [[company.expireDate]]</p>
-          </div>
-    <div class="card-actions">
-        <paper-button company="[[company]]" on-tap="edition">Editar</paper-button>
-        <paper-button company="[[company]]" on-tap="remove">Deletar</paper-button>
-        <paper-button company="[[company]]" on-tap="send">Enviar</paper-button>
-    </div>
-    </paper-card>  
-
-  </template>  -->
 
   </template>
 
@@ -80,12 +60,14 @@ lista de denuncias creadas en Animilia y almacenadas en Firebase
       is: 'company-list',
 
       properties:{
-        data:Object,
-       
-        company:Object
+        data:Object,   
+        company:Object,
+        // propiedad a la que le atribuiremos el valor de la fecha de inicio seleccionada en el date-picker de Vaadin y que la usaremos para hacer el filtro a travès de la propiedad computada 'computeFilter'
+        startStamp: Number,
+        endStamp: Number
+        
       },
 
-      behaviors: [Polymer.BIBehavior],
 
        // el evento 'delete' se recibe en el componente <my-app> para poder abrir el 'dialog' 
       remove:function(e) {   
@@ -103,13 +85,28 @@ lista de denuncias creadas en Animilia y almacenadas en Firebase
         var companyItem = e.currentTarget.company;
         this.fire('send', companyItem) 
       },  
+      // enlace con my-app
+      filterDialog:function() {          
+        this.fire('filterDialog') 
+      }, 
+       // enlace con my-app. En el paràmetro 'period' recibimos el objeto que contiene las fechas seleccionadas en el 'date-picker'
+      fiterPeriod:function(e,period){
+        this.startStamp = period.startStamp;
+        this.endStamp = period.endStamp
+      },
 
-      june:function(item){
-        return item.identificador == 'a'
-      }
-
-    
-
+      // filtro dinàmico que variarà en función del valor de las propiedades 'startStamp' y 'endStamp'
+      computeFilter:function(startStamp,endStamp){
+            if (!startStamp || !endStamp){
+                      return null // si no existen las 2 propiedades no se aplica el filtro
+                  }else{
+                    return function(item){
+                        return (item.expireStamp >= startStamp) && (item.expireStamp <= endStamp+86400000) // 86400000 corresponden a 1 dia. Si no hacemos esto el filtro no incluirà aquellas grupos cuya data de revisiòn sea igual a la fecha de vencimiento seleccionada en el date-picker, porque tenemos que considerar que el timestamp cambia a cada segundo.
+                  }                
+                  
+              }
+           
+      },  
 
     });
   </script>

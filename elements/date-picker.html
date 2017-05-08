@@ -1,0 +1,110 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/vaadin-date-picker/vaadin-date-picker.html">
+
+
+
+<link rel="import" href="../bower_components/iron-flex-layout/classes/iron-flex-layout.html">
+
+
+
+<dom-module id="date-picker">
+  <template>
+    <style>
+  
+    </style>
+
+
+
+<div class="layout horizontal around-justified">
+  <vaadin-date-picker id="start" label="Data inicial" on-value-changed="startDate"></vaadin-date-picker>
+  <vaadin-date-picker id="end" label="Data final" on-value-changed="endDate"></vaadin-date-picker>
+</div>
+<!-- 
+ <template id="template" is="dom-repeat" items="[[data]]" as="company" filter="{{computeFilter(startStamp,endStamp)}}">  
+    <paper-item>
+  <paper-item-body two-line>
+    <div>[[company.identificador]]</div>
+    <div secondary>Revisao: [[company.expireDate]]</div>
+  </paper-item-body>
+  <iron-icon icon="editor:mode-edit" company="[[company]]" on-tap="edition"></iron-icon>
+  <iron-icon icon="clear" company="[[company]]" on-tap="remove" alt="deletar"></iron-icon>
+</paper-item>
+</template>  -->
+ 
+
+  </template>
+
+  <script>
+    Polymer({
+
+      is: 'date-picker',
+
+      properties:{
+             // propiedad a la que le atribuiremos el valor de la fecha de inicio seleccionada en el date-picker de Vaadin y que la usaremos para hacer el filtro a travès de la propiedad computada 'computeFilter'
+        startStamp:{
+        	type:Number,
+        	notify:true
+        },
+        endStamp: {
+        	type:Number,
+        	notify:true
+        },
+        
+      },
+ 
+
+      // necesitamos traducir el calendario de Vaadin al portugués y lo hacemos injectando un objeto JSON con todas las propiedades a alterar a la propiedad 'i18n'
+      ready:function(){
+
+        var localizeBr = {  
+                week: 'semana',
+                calendar: 'calendario',
+                clear: 'limpar',
+                today: 'hoje',
+                cancel: 'cancelar',
+                firstDayOfWeek: 1,
+                monthNames: ['janeiro','fevereiro','março','abril','maio','junho',
+                            'julho','agosto','setembro','outubro','novembro','dezembro'],
+                weekdays: 'domingo_segunda-feira_terça-feira_quarta-feira_quinta-feira_sexta-feira_sabado'.split('_'),
+                weekdaysShort: ['dom','seg','ter','qua','qui','sex','sab'],
+          
+              formatDate: function(d) {
+                  return [d.getDate(), d.getMonth() + 1, d.getFullYear()].join('/');
+              },
+              
+              parseDate: function(text) {
+    // This example produces a really strict parser which only accepts
+    // perfectly formatted dates like '12.8.2013'. Less strict implementation or
+    // a 3rd party parser like in the example below is recommended.
+              var parts = text.split('/');
+              if (parts.length === 3) {
+                  var date = new Date(0, 0);
+                  date.setFullYear(parseInt(parts[2]));
+                  date.setMonth(parseInt(parts[1]) - 1);
+                  date.setDate(parseInt(parts[0]));
+                  return date;
+                }
+              },
+
+              formatTitle: function(monthName, fullYear) {
+                  return monthName + ' ' + fullYear;
+              }
+
+              };
+         this.$.start.i18n = localizeBr;    
+         this.$.end.i18n = localizeBr; 
+      },
+
+      startDate:function(){
+        this.startStamp = Date.parse(this.$.start.value);        
+      },
+
+      endDate:function(){
+        this.endStamp = Date.parse(this.$.end.value);       
+      },
+
+ 
+
+    });
+  </script>
+</dom-module>
