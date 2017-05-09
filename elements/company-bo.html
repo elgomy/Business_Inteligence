@@ -12,11 +12,13 @@
 <!-- behaviors -->
 <link rel="import" href="../behaviors/input-behavior.html">
 <!-- custom components -->
-<link rel="import" href="company-setor.html">
+
 <link rel="import" href="set-update.html">
 <link rel="import" href="set-profile.html">
 
 
+
+<link rel="import" href="../bower_components/gold-email-input/gold-email-input.html">
 
 <!--
 `form-animilia`
@@ -38,7 +40,7 @@ formulario de entrada de denuncias de maltrato animal
           label="Nome do Grupo"
           required
           on-keydown="validateNull"
-          error-message="necessário incluir um Nome"
+          error-message="necessário incluir o Nome do Grupo"
           value="{{company.identificador}}">          
     </paper-input>
 
@@ -55,6 +57,13 @@ formulario de entrada de denuncias de maltrato animal
           error-message="incluir 7 números do CNAE"
           value="{{company.setor}}">                
     </paper-input>
+
+    <gold-email-input 
+          label="Email do gerente da conta"
+          value="{{company.email}}"
+          auto-validate
+          error-message="Email incorreto">         
+    </gold-email-input>
 
 
   <h3 on-tap="toggleUpdate">1.Próxima Revisão<iron-icon icon="arrow-drop-down"></iron-icon></h3>
@@ -81,7 +90,6 @@ formulario de entrada de denuncias de maltrato animal
 
 
 
-<company-setor></company-setor>
 
 
   </template>
@@ -103,7 +111,8 @@ formulario de entrada de denuncias de maltrato animal
             //  profile:'',
               setor:'',
               expireDate:'',
-              expireStamp:''
+              expireStamp:'',
+              email:''
 
 
               
