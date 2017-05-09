@@ -180,7 +180,7 @@ editor con el que vamos poder guardar los datos de entrada de los Grupos
         }  
    
    
-        if(this.company.identificador && this.company.descripcion && this.company.expireDate){
+        if(this.company.identificador && this.company.setor && this.company.expireDate){
 
           
           var calendarData = {
@@ -302,8 +302,10 @@ editor con el que vamos poder guardar los datos de entrada de los Grupos
     sendcompany:function(e,companyItem){
       window.location.href = "mailto:mail@example.org"
                           +"?subject="+"test"
-                          +"&body="+companyItem.descripcion
+                          +"&body="+companyItem.setor
     },
+
+   
 
   
 

@@ -1,7 +1,10 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <!--paper elements -->
 <link rel="import" href="../bower_components/paper-input/paper-input.html">
-<link rel="import" href="../bower_components/paper-input/paper-textarea.html">
+
+<link rel="import" href="../bower_components/paper-input/paper-input-behavior.html">
+<link rel="import" href="../bower_components/paper-input/paper-input-container.html">
+<link rel="import" href="../bower_components/paper-input/paper-input-error.html">
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../bower_components/paper-radio-button/paper-radio-button.html">
 <!--iron elements -->
@@ -30,12 +33,7 @@ formulario de entrada de denuncias de maltrato animal
       }
     </style>  
 
-
-  
-<!-- sistema de entrada de datos para generar la denuncia -->
-
-    <paper-input 
-          
+    <paper-input          
           id="idInput" 
           label="Nome do Grupo"
           required
@@ -44,15 +42,19 @@ formulario de entrada de denuncias de maltrato animal
           value="{{company.identificador}}">          
     </paper-input>
 
-     <paper-textarea 
+     <paper-input
           id="textInput" 
-          label="Comentários"
-          rows="2"
+          label="CNAE"
+          type="string"
+          prevent-invalid-input
+          maxlength="7"
+          auto-validate
+          pattern="[0-9]*"     
           required   
           on-keydown="validateNull"
-          error-message="necessário relatar a denúncia"
-          value="{{company.descripcion}}">                
-    </paper-textarea>
+          error-message="incluir 7 números do CNAE"
+          value="{{company.setor}}">                
+    </paper-input>
 
 
   <h3 on-tap="toggleUpdate">1.Próxima Revisão<iron-icon icon="arrow-drop-down"></iron-icon></h3>
@@ -99,7 +101,7 @@ formulario de entrada de denuncias de maltrato animal
             return{        
               identificador:'',
             //  profile:'',
-              descripcion:'',
+              setor:'',
               expireDate:'',
               expireStamp:''
 

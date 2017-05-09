@@ -46,6 +46,7 @@ lista de denuncias creadas en Animilia y almacenadas en Firebase
           <div>[[company.identificador]]</div>
           <div secondary>Revisao: [[company.expireDate]]</div>
         </paper-item-body>
+         <iron-icon icon="mail" company="[[company]]" on-tap="emailAlert"></iron-icon>
         <iron-icon icon="editor:mode-edit" company="[[company]]" on-tap="edition"></iron-icon>
         <iron-icon icon="clear" company="[[company]]" on-tap="remove" alt="deletar"></iron-icon>
     </paper-item>
@@ -106,7 +107,20 @@ lista de denuncias creadas en Animilia y almacenadas en Firebase
                   
               }
            
-      },  
+      }, 
+
+        // envio de la denuncia por email. El usuario tiene que tener un gestor de correo, sino no funciona. Como alternativa podemos elaborar codigo en NodeJS
+    emailAlert:function(e){
+      console.log(e.currentTarget.company.identificador)
+      window.location.href = "mailto:mail@example.org"
+                         +"?subject=" + "Revisão da empresa " + e.currentTarget.company.identificador.toUpperCase()
+                          +"&body="+  "Prezado     ," + "%0D%0A" + "%0D%0A" + "La empresa " + e.currentTarget.company.identificador.toUpperCase() + " precisa ser revisada até o dia " + e.currentTarget.company.expireDate + ". Favor atualizar a documentação" + "%0D%0A" + "%0D%0A" + "Obrigado"
+    },
+
+       ready:function(){
+      fecha = Date.now();
+      console.log(fecha)
+    } 
 
     });
   </script>

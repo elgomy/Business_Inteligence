@@ -53,12 +53,12 @@ formulario de entrada de denuncias de maltrato animal
          'clearIcon.tap': 'close'
         },   
 
-        // método para guardar los datos del Grupo en Firebase una vez editado. En este caso editamos las propiedades 'identificador' y 'descripcion'
+        // método para guardar los datos del Grupo en Firebase una vez editado. En este caso editamos las propiedades 'identificador' y 'setor'
       save:function(){ 
         
           var itemUpdate = {
                 identificador: this.item.identificador,
-                descripcion: this.item.descripcion,
+                setor: this.item.setor,
                 expireDate: this.item.expireDate,
                 expireStamp: this.item.expireStamp
               //  profile:this.item.profile
