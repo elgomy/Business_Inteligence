@@ -4,7 +4,7 @@
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../bower_components/paper-radio-button/paper-radio-button.html">
 <link rel="import" href="../bower_components/paper-radio-group/paper-radio-group.html">
-
+<link rel="import" href="../bower_components/iron-signals/iron-signals.html">
 
 
 
@@ -45,7 +45,7 @@ formulario de entrada de denuncias de maltrato animal
 <paper-button raised id="editProfile">editar</paper-button>
 
 <iron-signals on-iron-signal-cleardate="updateProfile"></iron-signals>
-
+<iron-signals on-iron-signal-firebasedate="editorProfile"></iron-signals>
 
 
   </template>
@@ -79,6 +79,12 @@ formulario de entrada de denuncias de maltrato animal
       listeners:{
          'saveProfile.tap': 'setProfile', 
          'editProfile.tap': 'updateProfile'
+       },
+
+       editorProfile:function(){
+            this.$.editProfile.style.display = "inline-flex";
+            this.$.saveProfile.style.display = "none";
+            this.display = false;
        },
 
    

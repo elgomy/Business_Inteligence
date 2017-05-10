@@ -1,0 +1,78 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../bower_components/paper-item/paper-item-body.html">
+<link rel="import" href="../bower_components/iron-icon/iron-icon.html">
+
+<link rel="import" href="../bower_components/iron-icons/social-icons.html">
+<!--
+`news-animilia`
+componente que mostrará noticias referentes a los malos tratos de animales
+
+@demo demo/index.html 
+-->
+
+<dom-module id="alert-animilia">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+
+      img{
+        width: 30px;
+        height: 30px
+      }
+
+    
+    </style>
+   
+        <paper-item>
+            <paper-item-body two-line>
+                <div><h3>{{alert.titulo}}</h3></div>
+                <div secondary><a href="{{alert.link}}" target="_blank">{{alert.contenido}}</a></div>
+                <div>{{alert.data}}</div>
+                <!--botones para compartir las noticias en las redes sociales -->
+                <a on-tap="shareLink" href="whatsapp://send?text='{{directLink}}'"><img src="../images/whatsapp-icon.svg" alt=""></a>
+                <a on-tap="shareLink" href="http://www.facebook.com/sharer.php?u={{directLink}}&t=NorfiPC" target="_blank"><img src="../images/facebook-3.svg" alt=""></a>
+                <a on-tap="shareLink" href="http://twitter.com/home?status={{directLink}}" target="_blank"><img src="../images/twitter-3.svg" alt=""></a>      
+            </paper-item-body>         
+        </paper-item>
+                                  
+       
+  </template>
+
+  <script>
+    Polymer({
+
+      is: 'alert-animilia',
+
+      properties:{
+          
+           alert:{
+              type:Object,
+              value: function(){
+                return{
+                   titulo:'',
+                    contenido:'',
+                    link:'',
+                    data:''
+                }
+              }
+            },
+
+            directLink:String
+      },
+
+      shareLink:function(){
+        var full_Link = this.alert.link;
+        var removedGoogle = full_Link.split('&url=')[1].split('&ct');
+        var final_Link = removedGoogle[0];     
+        this.directLink = final_Link;      
+        
+      },
+
+
+
+    });
+  </script>
+</dom-module>
