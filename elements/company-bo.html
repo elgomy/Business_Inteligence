@@ -15,9 +15,6 @@
 
 <link rel="import" href="set-update.html">
 <link rel="import" href="set-profile.html">
-
-
-
 <link rel="import" href="../bower_components/gold-email-input/gold-email-input.html">
 
 <!--
@@ -32,6 +29,10 @@ formulario de entrada de denuncias de maltrato animal
     <style>
       :host {
         display: block;
+      }
+
+      .error{
+        color:red;
       }
     </style>  
 
@@ -66,7 +67,8 @@ formulario de entrada de denuncias de maltrato animal
     </gold-email-input>
 
 
-  <h3 on-tap="toggleUpdate">1.Próxima Revisão<iron-icon icon="arrow-drop-down"></iron-icon></h3>
+  <h3 on-tap="toggleUpdate">1.Próxima Revisão<iron-icon icon="arrow-drop-down"></iron-icon></h3> 
+    <p class="error">[[dateError]]</p>
     <iron-collapse id="updateCollapse">
       <div class="collapse-content">
         <set-update formatted-date="{{company.expireDate}}" expire-Stamp="{{company.expireStamp}}"></set-update>
@@ -75,6 +77,7 @@ formulario de entrada de denuncias de maltrato animal
     </iron-collapse>
 
   <h3 on-tap="toggleProfile">2.Perfil<iron-icon icon="arrow-drop-down"></iron-icon></h3>
+  <p class="error">[[profileError]]</p>
     <iron-collapse id="profileCollapse">
       <div class="collapse-content">
         <set-profile profile="{{company.profile}}"></set-profile>
@@ -127,11 +130,19 @@ formulario de entrada de denuncias de maltrato animal
             notify: true,
          },
 
-
+         dateError:String,
+         profileError:String
           
       },
 
        behaviors: [Polymer.inputBehavior],
+       listeners:{
+        'deleteError':'cancelError'
+       },
+
+       cancelError:function(){
+          this.profileError = ''
+       },
 
         toggleUpdate:function(){
           this.$.updateCollapse.toggle();
@@ -144,6 +155,8 @@ formulario de entrada de denuncias de maltrato animal
         toggleFinanc:function(){
           this.$.financCollapse.toggle();
         },
+
+
    
 
    

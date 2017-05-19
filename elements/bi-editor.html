@@ -78,7 +78,11 @@ editor con el que vamos poder guardar los datos de entrada de los Grupos
     <!-- creación de Grupos -->
     <div name="create">
       <iron-icon icon="clear" id="clearIcon"></iron-icon>
-        <company-bo company="{{company}}" inputs="{{inputs}}"></company-bo>
+        <company-bo 
+            company="{{company}}" 
+            inputs="{{inputs}}" 
+            date-error="{{dateError}}"
+            profile-error="{{profileError}}"></company-bo>
         <paper-fab icon="done" id="saveButton"></paper-fab>      
     </div>
 
@@ -131,7 +135,13 @@ editor con el que vamos poder guardar los datos de entrada de los Grupos
          section:{
             type:String,
             value:'list'
-         },     
+         },  
+
+          dateError:{
+          type:String,    
+         },
+
+         profileError:String,   
       },
 
       behaviors: [Polymer.inputBehavior, Polymer.BIBehavior],
@@ -177,7 +187,9 @@ editor con el que vamos poder guardar los datos de entrada de los Grupos
      // enlace con el componente <set-update>. Month y year serán los filtros para guardar la fecha de la revisión en el mes correspondiente en la agenda de Firebase
     setDate:function(e,dateUpdate){
         this.month = dateUpdate.month;
-        this.year = dateUpdate.year
+        this.year = dateUpdate.year;
+        this.dateError = '';
+       
 
      },
   
@@ -186,14 +198,16 @@ editor con el que vamos poder guardar los datos de entrada de los Grupos
         if(!this.user){
           this.fire('negative-toast', 'você deve estar autenticado');
           return false;
-        }  
+        } 
+
+       
     
-        if(this.company.identificador && this.company.setor && this.company.expireDate){
+        if(this.company.identificador && this.company.setor && this.company.expireDate && this.company.profile){
         
           var calendarData = {
                 identificador: this.company.identificador,
-                expireDate: this.company.expireDate,
-                timestamp: this.company.expireStamp,
+                expireDate:    this.company.expireDate,
+                timestamp:     this.company.expireStamp,
           };    
            // generamos una key (id) para el Grupo que será la misma para las 2 ramas
           var newCompanyKey = this.$.query.ref.push().key;
@@ -229,8 +243,16 @@ editor con el que vamos poder guardar los datos de entrada de los Grupos
         } else {
           // al clickar en el botón 'guardar' se lanza el mètodo validator, incluido en el behavior, que valida los inputs
           for(var i = 0; i < this.inputs.length; i++ ){
-              this.validator(this.inputs[i])
-           };  
+              this.validator(this.inputs[i]);
+
+              }
+              if (!this.company.expireDate){
+                this.dateError = 'favor selecionar um periodo'
+              }; 
+
+              if (!this.company.profile){
+                this.profileError = 'favor selecionar um perfil'
+              }; 
               
         };                          
       },
