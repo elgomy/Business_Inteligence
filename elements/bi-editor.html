@@ -2,18 +2,16 @@
 <link rel="import" href="../bower_components/polymerfire/polymerfire.html">
 <!-- iron elements-->
 <link rel="import" href="../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../bower_components/iron-icons/av-icons.html">
 <link rel="import" href="../bower_components/iron-pages/iron-pages.html">
 <link rel="import" href="../bower_components/iron-signals/iron-signals.html">
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 <!-- paper elements-->
-<link rel="import" href="../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../bower_components/paper-toast/paper-toast.html">
-
-<link rel="import" href="../bower_components/paper-toggle-button/paper-toggle-button.html">
 <!-- company elements -->
 <link rel="import" href="company-bo.html">
 <link rel="import" href="company-edit.html">
 <link rel="import" href="company-list.html">
-
 <!-- behaviors-->
 <link rel="import" href="../behaviors/input-behavior.html">
 <link rel="import" href="../behaviors/BI-behavior.html">
@@ -27,10 +25,24 @@ editor con el que vamos poder guardar los datos de entrada de los Grupos
 
 <dom-module id="bi-editor">
   <template>
-    <style>
+    <style include="iron-flex iron-flex-alignment">
       :host {
         display: block;
+        
+      }
 
+      paper-fab{
+        --paper-fab-background: var(--accent-color);
+      }
+
+      #sortName{
+        display: none
+      }
+
+      .filterIcons{
+        @apply(--layout-horizontal);
+        @apply(--layout-end-justified);
+        border: 1px solid;
       }
     
     </style>
@@ -41,9 +53,7 @@ editor con el que vamos poder guardar los datos de entrada de los Grupos
             user="{{user}}">
     </firebase-auth>
 
-
-
-    <!-- path de los Grupos -->
+    <!-- path de los Grupos --> 
     <firebase-query
             id="query"
             app-name="form-polymerfire"
@@ -52,57 +62,46 @@ editor con el que vamos poder guardar los datos de entrada de los Grupos
             order-by-child="{{filter}}">
     </firebase-query> 
 
-    
-
-    
+    <!-- path de la Agenda -->
     <firebase-query
             id="queryUpdate"
             app-name="form-polymerfire"
             path="/agenda/[[user.uid]]/[[year]]/[[month]]"
             data="{{calendar}}">
     </firebase-query>
-      
-   
-     
-
+         
+    <!-- signal lanzado por el método 'dialogAccept' de <my-app> -->
     <iron-signals on-iron-signal-delete="removeItem"></iron-signals>
      
     <iron-pages selected="{{section}}" attr-for-selected="name">
 
-      <!-- creación de denuncias -->
-      
-       <div name="create">
-       <iron-icon icon="clear" id="clearIcon"></iron-icon>
-          <company-bo company="{{company}}" inputs="{{inputs}}"></company-bo>
-          <paper-fab icon="done" id="saveButton"></paper-fab>  
-          
-       </div>
+    <!-- creación de Grupos -->
+    <div name="create">
+      <iron-icon icon="clear" id="clearIcon"></iron-icon>
+        <company-bo company="{{company}}" inputs="{{inputs}}"></company-bo>
+        <paper-fab icon="done" id="saveButton"></paper-fab>      
+    </div>
 
-       <!-- lista de denuncias -->
+    <!-- lista de Grupos -->
+    <div name="list">       
+      <paper-fab icon="add" id="createcompany"></paper-fab>  
 
-      <div name="list">
-      <paper-fab icon="add" id="createcompany"></paper-fab>
-
- 
-
-       <paper-toggle-button on-change="toggle">ordenar pela data da revisao</paper-toggle-button>
-      
-
-          <company-list data="[[data]]" company="[[company]]"></company-list>  
-          
+      <div class="filterIcons">
+        <iron-icon class="flexchild" icon="swap-vert" id="sortDate"></iron-icon>  
+        <iron-icon  icon="av:sort-by-alpha" id="sortName"></iron-icon > 
+        <iron-icon  icon="event" on-tap="filterDialog" id="calendar"></iron-icon>      
       </div>
 
-  
+      <company-list data="[[data]]" company="[[company]]"></company-list>       
+    </div>
 
-      <!-- editor de Grupos -->
-
-      <div name="editor">
-          <company-edit id="editor"></company-edit>  
-      </div>
+    <!-- editor de Grupos -->
+    <div name="editor">
+      <company-edit id="editor"></company-edit>  
+    </div>
           
    </iron-pages>
 
-  
 
   </template>
 
@@ -120,18 +119,15 @@ editor con el que vamos poder guardar los datos de entrada de los Grupos
          // propiedad que hace referencia al mes del path de la agenda
          month:Number,
         // propiedad que hace referencia al mes actual del path de la agenda, que será deletado cuando reagendemos el vencimiento 
-        year:Number, 
+         year:Number, 
          atualMonth:Number,
          atualYear:Number,
         // key del grupo dentro del path de la Agenda
          calendarKey:String,
          filter:{
-          type: String,
-          value:'identificador',
-        },
-
-         
-        
+            type: String,
+            value:'identificador',
+          },            
          section:{
             type:String,
             value:'list'
@@ -149,40 +145,51 @@ editor con el que vamos poder guardar los datos de entrada de los Grupos
          'closeEditor':'backList',
          'clearIcon.tap': 'backList',
          'setUpdate': 'setDate',
-         'rescheduleEdit': 'reschedule',      
-       
-     },
-     // filtrado de los grupos por orden alfabético del identificador o por fecha de revisiòn 
-     toggle:function(e){
-      if(e.currentTarget.checked){
-        
-        this.filter = 'expireStamp'
-      }
-      else{
-        this.filter = 'identificador'
-      }
+         'rescheduleEdit': 'reschedule',  
+         'setExpired': 'setExpired',
+         'sortDate.tap': 'sortDate',
+         'sortName.tap': 'sortName'             
+      },
+
+     // enlace con el método 'timer' de <company-list>, para actualizar en Firebase las propiedades 'expireDate' y 'expireStamp' de aquellos grupos vencidos
+     setExpired:function(e,dato){
+      console.log(dato);
+      var update = {
+        expireDate: 'vencido',
+        expireStamp: 'vencido'
+       };
+      this.$.query.ref.child(dato).update(update)
      },
 
+    // filtrar grupos por fecha
+    sortDate:function(){
+        this.filter = 'expireStamp';
+        this.$.sortDate.style.display = 'none'
+        this.$.sortName.style.display = 'block'
+    },
+    // filtrar grupos por orden alfabetico
+    sortName:function(){
+        this.filter = 'identificador';
+        this.$.sortDate.style.display = 'block'
+        this.$.sortName.style.display = 'none'
+    },
 
      // enlace con el componente <set-update>. Month y year serán los filtros para guardar la fecha de la revisión en el mes correspondiente en la agenda de Firebase
-     setDate:function(e,dateUpdate){
+    setDate:function(e,dateUpdate){
         this.month = dateUpdate.month;
         this.year = dateUpdate.year
 
      },
   
       // método para guardar los datos de la denuncia en Firebase
-      save:function(){
-
+    save:function(){
         if(!this.user){
           this.fire('negative-toast', 'você deve estar autenticado');
           return false;
         }  
-   
-   
+    
         if(this.company.identificador && this.company.setor && this.company.expireDate){
-
-          
+        
           var calendarData = {
                 identificador: this.company.identificador,
                 expireDate: this.company.expireDate,
@@ -231,7 +238,7 @@ editor con el que vamos poder guardar los datos de entrada de los Grupos
     // borrado del grupo clickado en la lista. Enlace con el componente <company-list>
     removeItem:function(e,companyItem){
       // BI-behavior. Método para definir el path de la agenda, asignando un valor a 'month' y a 'year'
-      this.setPathdate(companyItem.expireDate);
+       this.setPathdate(companyItem.expireDate);
 
       // borramos los datos de la empresa en los dos paths de Firebase simultaneamente
        this.$.query.ref.child(companyItem.$key).remove();
@@ -286,30 +293,20 @@ editor con el que vamos poder guardar los datos de entrada de los Grupos
     }, 
 
     create:function(){
-      this.section = 'create';     
+      this.section = 'create';    
+      this.validateNull() 
     },
 
     backList:function(){
       this.section = 'list'
     },
 
-    search:function(){
-      this.query = this.querySearch
-    },
-
-
     // envio de la denuncia por email. El usuario tiene que tener un gestor de correo, sino no funciona. Como alternativa podemos elaborar codigo en NodeJS
     sendcompany:function(e,companyItem){
       window.location.href = "mailto:mail@example.org"
                           +"?subject="+"test"
                           +"&body="+companyItem.setor
-    },
-
-   
-
-  
-
-   
+    },   
     
 
     });

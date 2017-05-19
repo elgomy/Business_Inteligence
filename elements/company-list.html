@@ -1,11 +1,18 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
+<!-- paper elements-->
 <link rel="import" href="../bower_components/paper-card/paper-card.html">
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../bower_components/paper-badge/paper-badge.html">
+<link rel="import" href="../bower_components/paper-collapse-item/paper-collapse-item.html">
 
 <link rel="import" href="../bower_components/iron-signals/iron-signals.html">
+<link rel="import" href="../bower_components/iron-collapse/iron-collapse.html">
 
 <link rel="import" href="../bower_components/paper-item/paper-item.html">
+
 <link rel="import" href="../bower_components/paper-item/paper-item-body.html">
+
 <link rel="import" href="../bower_components/iron-icons/editor-icons.html">
 
 <!--
@@ -20,37 +27,128 @@ lista de denuncias creadas en Animilia y almacenadas en Firebase
     <style>
       :host {
         display: block;
+      
       }
 
       paper-card{
           margin-bottom:10px;
+            --paper-card:{
+              font-family: "Averta","Avenir W02","Avenir",Helvetica,Arial,sans-serif
+            }
       }
 
-      paper-item{
-        --paper-item:{
-          background: #64FFDA;
-        };
+      paper-item{      
+         border-top:1px solid #eceff1;
+      } 
+    
+      paper-item:hover{
+        background-color: #ffcdd2;
       }
+
+   
+    /* el nombre del Grupo siempre en mayúsculas */
+      paper-item-body #companyId {
+        text-transform: uppercase;     
+      }   
+
+      .container{
+        width: 70px;
+        border: solid 1px;
+        margin-top:10px;
+        margin-left:25px;
+        display: inline
+      }
+  
+      iron-icon{
+        --iron-icon-width:20px;
+      }
+
     </style>
 
 
-<iron-icon icon="event" on-tap="filterDialog"></iron-icon>
+
+    <paper-card>
+      <div class="card-content">
+        <div class="container">
+          <span>vencidos</span>
+          <paper-badge label="{{lengthExpired}}"></paper-badge>
+        </div>
+
+        <div class="container">
+          <span>45 dias</span>
+          <paper-badge label="{{length45}}"></paper-badge> 
+        </div>    
+      </div>
+    </paper-card>
+
+
+ <p>grupos a revisar menos de 45 dias:</p>
+ <div id="revisar"></div>
+
+  <p>grupos vencidos:</p>
+ <div id="vencidos"></div>
+
 
 <!-- ENLACE CON MY-APP PARA LANZAR EL DIALOG DEL DATE-PICKER -->
 <iron-signals on-iron-signal-filter="fiterPeriod"></iron-signals>
 
  
  <template id="template" is="dom-repeat" items="[[data]]" as="company" filter="{{computeFilter(startStamp,endStamp)}}">  
-    <paper-item>
+
+    <paper-item id="test">
         <paper-item-body two-line>
-          <div>[[company.identificador]]</div>
-          <div secondary>Revisao: [[company.expireDate]]</div>
-        </paper-item-body>
-         <iron-icon icon="mail" company="[[company]]" on-tap="emailAlert"></iron-icon>
-        <iron-icon icon="editor:mode-edit" company="[[company]]" on-tap="edition"></iron-icon>
+          <div id="companyId" class="blue">[[company.identificador]]</div>
+          <div secondary>Revisão: [[company.expireDate]] <iron-icon icon="warning" hidden$="{{warningHide}}">
+            
+
+          </iron-icon></div>
+
+          
+        <iron-collapse id$="collapse{{company.identificador}}">
+              <iron-icon icon="mail" company="[[company]]" on-tap="emailAlert"></iron-icon>
+        <iron-icon icon="description" company="[[company]]" on-tap="edition"></iron-icon>
         <iron-icon icon="clear" company="[[company]]" on-tap="remove" alt="deletar"></iron-icon>
+          </iron-collapse>
+
+        </paper-item-body>
+         
+        <iron-icon icon="expand-more" on-tap="showDetails"></iron-icon>
+        <iron-icon icon="info-outline" on-tap="showInfo"></iron-icon>
+
+
+
     </paper-item>
-</template>
+
+    <paper-dialog id$="dialog{{company.identificador}}">
+         <h2>[[company.identificador]]</h2>
+         <paper-dialog-scrollable>
+          <p>Revisão: [[company.expireDate]] </p> 
+          <p>Profile: [[company.profile]] </p> 
+           <p>Setor: [[company.setor]] </p> 
+            <p>Email do GG: [[company.email]] </p> 
+        </paper-dialog-scrollable>
+     
+</paper-dialog>
+
+
+</template> 
+
+
+
+<!--
+ <template id="template" is="dom-repeat" items="[[data]]" as="company" filter="{{computeFilter(startStamp,endStamp)}}">  
+    <paper-collapse-item header="[[company.identificador]]">
+        
+         <iron-icon icon="mail" company="[[company]]" on-tap="emailAlert"></iron-icon>
+        <iron-icon icon="description" company="[[company]]" on-tap="edition"></iron-icon>
+        <iron-icon icon="clear" company="[[company]]" on-tap="remove" alt="deletar"></iron-icon>
+             <iron-icon icon="mail" company="[[company]]" on-tap="emailAlert"></iron-icon>
+        <iron-icon icon="description" company="[[company]]" on-tap="edition"></iron-icon>
+        <iron-icon icon="clear" company="[[company]]" on-tap="remove" alt="deletar"></iron-icon>
+    </paper-collapse-item>
+</template>   -->
+
+
  
 
   </template>
@@ -65,10 +163,45 @@ lista de denuncias creadas en Animilia y almacenadas en Firebase
         company:Object,
         // propiedad a la que le atribuiremos el valor de la fecha de inicio seleccionada en el date-picker de Vaadin y que la usaremos para hacer el filtro a travès de la propiedad computada 'computeFilter'
         startStamp: Number,
-        endStamp: Number
+        endStamp: Number,
+        warningHide:{
+          type:Boolean,
+          value:true
+        },
+
+        alert45:{
+          type:Array,
+          value: function(){
+              return []
+          }         
+        },
+
+         expired:{
+          type:Array,
+          value: function(){
+              return []
+          }         
+        },
+
+        length45:Number,
+        lengthExpired: Number
         
       },
 
+     
+
+      // Handling events in dom-repeat templates https://www.polymer-project.org/1.0/docs/devguide/templates
+      showDetails:function(e,detail,sender){
+        var id = e.model.company.identificador;
+        var selector = '#collapse' + id;
+        this.$$(selector).toggle();
+      },
+
+       showInfo:function(e,detail,sender){
+        var id = e.model.company.identificador;
+        var selector = '#dialog' + id;
+        this.$$(selector).open();
+      },
 
        // el evento 'delete' se recibe en el componente <my-app> para poder abrir el 'dialog' 
       remove:function(e) {   
@@ -86,10 +219,7 @@ lista de denuncias creadas en Animilia y almacenadas en Firebase
         var companyItem = e.currentTarget.company;
         this.fire('send', companyItem) 
       },  
-      // enlace con my-app
-      filterDialog:function() {          
-        this.fire('filterDialog') 
-      }, 
+      
        // enlace con my-app. En el paràmetro 'period' recibimos el objeto que contiene las fechas seleccionadas en el 'date-picker'
       fiterPeriod:function(e,period){
         this.startStamp = period.startStamp;
@@ -117,11 +247,41 @@ lista de denuncias creadas en Animilia y almacenadas en Firebase
                           +"&body="+  "Prezado     ," + "%0D%0A" + "%0D%0A" + "La empresa " + company.identificador.toUpperCase() + " precisa ser revisada até o dia " + company.expireDate + ". Favor atualizar a documentação" + "%0D%0A" + "%0D%0A" + "Obrigado"
     },
 
-       ready:function(){
-      fecha = Date.now();
-      console.log(fecha);
+    ready:function(){    
+      this.async(this.timer,[3300])
       console.log(this.company)
-    } 
+    },
+
+    // método que acciona el control de las empresas cuya revisión debe ser dentro de los próximos 45 dias, y aquellas que ya vencieron
+    timer:function(){
+      var todayStamp = Date.now();
+      var period_30 = todayStamp + 2592000000;
+      var period_45 = todayStamp + 3888000000;
+          
+      for(i in this.data){
+
+        if (this.data[i].expireStamp == 'vencido' || this.data[i].expireStamp <= todayStamp){
+                
+          // enlace con <bi-editor> para actualizar las propiedades 'expireStamp' y 'expireDate' para 'vencido'
+          this.fire('setExpired', this.data[i].$key);
+          this.warningHide = false;
+          this.push('expired',this.data[i].identificador);
+          console.log(this.expired);
+
+          this.$.vencidos.innerHTML = this.expired;
+          this.lengthExpired = this.expired.length;       
+   
+        }
+      
+        else if (this.data[i].expireStamp < period_45){
+               
+         this.push('alert45',this.data[i].identificador);        
+         this.$.revisar.innerHTML = this.alert45;
+         this.length45 = this.alert45.length;        
+   
+        }
+      }
+    }
 
     });
   </script>
