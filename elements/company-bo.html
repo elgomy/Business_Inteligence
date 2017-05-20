@@ -17,6 +17,8 @@
 <link rel="import" href="set-profile.html">
 <link rel="import" href="../bower_components/gold-email-input/gold-email-input.html">
 
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+
 <!--
 `form-animilia`
 formulario de entrada de denuncias de maltrato animal
@@ -26,16 +28,36 @@ formulario de entrada de denuncias de maltrato animal
 
 <dom-module id="company-bo">
   <template>
-    <style>
+    <style include="iron-flex iron-flex-alignment">
       :host {
         display: block;
+
+
       }
 
       .error{
         color:red;
       }
+
+      #expUp{
+        display: none
+      }
+
+      .inputs{
+        max-width: 400px;      
+        margin: auto
+      }
+
+      paper-input{
+        --paper-input-container-focus-color:var(--accent-color)
+      }
+
+      gold-email-input{
+        --paper-input-container-focus-color:var(--accent-color)
+      }
     </style>  
 
+  <div id="inputs" class="inputs">
     <paper-input          
           id="idInput" 
           label="Nome do Grupo"
@@ -67,7 +89,11 @@ formulario de entrada de denuncias de maltrato animal
     </gold-email-input>
 
 
-  <h3 on-tap="toggleUpdate">1.Próxima Revisão<iron-icon icon="arrow-drop-down"></iron-icon></h3> 
+  <h3 on-tap="toggleUpdate">
+      Próxima Revisão
+      <iron-icon icon="arrow-drop-down" id="expDown"></iron-icon>
+    
+  </h3> 
     <p class="error">[[dateError]]</p>
     <iron-collapse id="updateCollapse">
       <div class="collapse-content">
@@ -76,7 +102,7 @@ formulario de entrada de denuncias de maltrato animal
       
     </iron-collapse>
 
-  <h3 on-tap="toggleProfile">2.Perfil<iron-icon icon="arrow-drop-down"></iron-icon></h3>
+  <h3 on-tap="toggleProfile">Perfil<iron-icon icon="arrow-drop-down"></iron-icon></h3>
   <p class="error">[[profileError]]</p>
     <iron-collapse id="profileCollapse">
       <div class="collapse-content">
@@ -84,14 +110,14 @@ formulario de entrada de denuncias de maltrato animal
       </div>
     </iron-collapse>
 
-   <h3 on-tap="toggleFinanc">3.Dados Financeiros<iron-icon icon="arrow-drop-down"></iron-icon></h3>
+   <h3 on-tap="toggleFinanc">Dados Financeiros<iron-icon icon="arrow-drop-down"></iron-icon></h3>
     <iron-collapse id="financCollapse">
       <div class="collapse-content">
         Faturamento %Ebitda Risco Interno
       </div>
     </iron-collapse>
 
-
+</div>
 
 
 
@@ -131,7 +157,8 @@ formulario de entrada de denuncias de maltrato animal
          },
 
          dateError:String,
-         profileError:String
+         profileError:String,
+       
           
       },
 
@@ -146,6 +173,8 @@ formulario de entrada de denuncias de maltrato animal
 
         toggleUpdate:function(){
           this.$.updateCollapse.toggle();
+         
+
         },
 
         toggleProfile:function(){

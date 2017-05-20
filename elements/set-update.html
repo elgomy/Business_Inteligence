@@ -27,13 +27,17 @@ formulario de entrada de denuncias de maltrato animal
       #editPeriod{
         display: none
       }
+
+      paper-radio-button{
+        --paper-radio-button-checked-color:var(--accent-color);
+      }
     </style>   
   
   
 
 <template is="dom-if" if="{{display}}">
     <paper-radio-group>
-        <paper-radio-button name="checked0" value="0" on-change="setPeriod">Inativo</paper-radio-button>
+      
         <paper-radio-button name="checked30" value="30" on-change="setPeriod">30 dias</paper-radio-button>
         <paper-radio-button name="checked60" value="60" on-change="setPeriod">60 dias</paper-radio-button>
         <paper-radio-button name="checked90" value="90" on-change="setPeriod">90 dias</paper-radio-button>

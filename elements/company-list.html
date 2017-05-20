@@ -4,7 +4,9 @@
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
 <link rel="import" href="../bower_components/paper-badge/paper-badge.html">
+<link rel="import" href="../bower_components/paper-spinner/paper-spinner-lite.html">
 <link rel="import" href="../bower_components/paper-collapse-item/paper-collapse-item.html">
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 
 <link rel="import" href="../bower_components/iron-signals/iron-signals.html">
 <link rel="import" href="../bower_components/iron-collapse/iron-collapse.html">
@@ -24,16 +26,19 @@ lista de denuncias creadas en Animilia y almacenadas en Firebase
 
 <dom-module id="company-list">
   <template>
-    <style>
+     <style include="iron-flex iron-flex-alignment">
       :host {
         display: block;
       
       }
 
       paper-card{
-          margin-bottom:10px;
+        
+
+         
             --paper-card:{
-              font-family: "Averta","Avenir W02","Avenir",Helvetica,Arial,sans-serif
+              margin:auto;
+              width: 500px
             }
       }
 
@@ -42,51 +47,85 @@ lista de denuncias creadas en Animilia y almacenadas en Firebase
       } 
     
       paper-item:hover{
-        background-color: #ffcdd2;
+        background-color: #fafafa;
+        
       }
 
    
     /* el nombre del Grupo siempre en mayúsculas */
       paper-item-body #companyId {
-        text-transform: uppercase;     
-      }   
+        text-transform: uppercase;
+        font-weight: bold     
+      }  
 
-      .container{
-        width: 70px;
-        border: solid 1px;
-        margin-top:10px;
-        margin-left:25px;
-        display: inline
-      }
+
+
+      
   
       iron-icon{
         --iron-icon-width:20px;
       }
 
+      paper-dialog{
+        min-width: 220px;
+        max-width: 350px
+      }
+
+     
+      .dialogHeader{
+        text-align: center
+      }
+      
+      .container{
+           @apply(--layout-vertical);
+           @apply(--layout-center);
+           @apply(--layout-center-justified);
+            background-color: #fafafa;
+            height: 80px
+
+      }
+
+      .span{
+        width: 130px;
+        margin-top:10px;
+      }
+
+      paper-badge{
+        --paper-badge:{
+          font-weight: bold   
+        }
+      }
+     
+
     </style>
 
 
 
-    <paper-card>
-      <div class="card-content">
-        <div class="container">
-          <span>vencidos</span>
-          <paper-badge label="{{lengthExpired}}"></paper-badge>
-        </div>
+<div class="container">
+   
+   
+       
+          <span class="span" id="exp">Revisões vencidas</span>
+          <paper-badge for="exp" label="[[lengthExpired]]"></paper-badge>
+       
 
-        <div class="container">
-          <span>45 dias</span>
-          <paper-badge label="{{length45}}"></paper-badge> 
-        </div>    
-      </div>
+ 
+          <span class="span" id="forfive">Revisar <  45 dias</span>
+          <paper-badge for="forfive" label="[[length45]]"></paper-badge> 
+        
+    
+</div>
+    <!--   <p>Grupos a revisar menos de 45 dias:</p>
+ <div id="revisar"></div>
+
+  <p>Grupos vencidos:</p>
+ <div id="vencidos"></div> -->
     </paper-card>
 
 
- <p>grupos a revisar menos de 45 dias:</p>
- <div id="revisar"></div>
 
-  <p>grupos vencidos:</p>
- <div id="vencidos"></div>
+
+ <paper-spinner-lite active id="spinner"></paper-spinner-lite>
 
 
 <!-- ENLACE CON MY-APP PARA LANZAR EL DIALOG DEL DATE-PICKER -->
@@ -98,7 +137,7 @@ lista de denuncias creadas en Animilia y almacenadas en Firebase
     <paper-item id="test">
         <paper-item-body two-line>
           <div id="companyId" class="blue">[[company.identificador]]</div>
-          <div secondary>Revisão: [[company.expireDate]] <iron-icon icon="warning" hidden$="{{warningHide}}">
+          <div secondary>Revisão: [[company.expireDate]] <iron-icon icon="warning" hidden$="[[warningHide]]">
             
 
           </iron-icon></div>
@@ -120,12 +159,14 @@ lista de denuncias creadas en Animilia y almacenadas en Firebase
     </paper-item>
 
     <paper-dialog id$="dialog{{company.identificador}}">
-         <h2>[[company.identificador]]</h2>
+         <h2 class="dialogHeader">[[company.identificador]]</h2>
          <paper-dialog-scrollable>
+         <div class="dialogContent">
           <p>Revisão: [[company.expireDate]] </p> 
           <p>Profile: [[company.profile]] </p> 
            <p>Setor: [[company.setor]] </p> 
             <p>Email do GG: [[company.email]] </p> 
+            </div>
         </paper-dialog-scrollable>
      
 </paper-dialog>
@@ -248,7 +289,7 @@ lista de denuncias creadas en Animilia y almacenadas en Firebase
     },
 
     ready:function(){    
-      this.async(this.timer,[3600])
+      this.async(this.timer,[4000])
       console.log(this.company)
     },
 
@@ -257,6 +298,8 @@ lista de denuncias creadas en Animilia y almacenadas en Firebase
       var todayStamp = Date.now();
       var period_30 = todayStamp + 2592000000;
       var period_45 = todayStamp + 3888000000;
+
+      
           
       for(i in this.data){
 
@@ -268,7 +311,7 @@ lista de denuncias creadas en Animilia y almacenadas en Firebase
           this.push('expired',this.data[i].identificador);
           console.log(this.expired);
 
-          this.$.vencidos.innerHTML = this.expired;
+         // this.$.vencidos.innerHTML = this.expired;
           this.lengthExpired = this.expired.length;       
    
         }
@@ -276,11 +319,13 @@ lista de denuncias creadas en Animilia y almacenadas en Firebase
         else if (this.data[i].expireStamp < period_45){
                
          this.push('alert45',this.data[i].identificador);        
-         this.$.revisar.innerHTML = this.alert45;
+        // this.$.revisar.innerHTML = this.alert45;
          this.length45 = this.alert45.length;        
    
         }
       }
+
+      this.$.spinner.active = false;
     }
 
     });

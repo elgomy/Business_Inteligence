@@ -33,6 +33,7 @@ editor con el que vamos poder guardar los datos de entrada de los Grupos
 
       paper-fab{
         --paper-fab-background: var(--accent-color);
+        margin:auto;
       }
 
       #sortName{
@@ -41,9 +42,15 @@ editor con el que vamos poder guardar los datos de entrada de los Grupos
 
       .filterIcons{
         @apply(--layout-horizontal);
-        @apply(--layout-end-justified);
-        border: 1px solid;
+      
+        
       }
+
+      iron-icon{
+        --iron-icon-fill-color:var(--accent-color);
+      }
+      
+     
     
     </style>
 
@@ -182,6 +189,10 @@ editor con el que vamos poder guardar los datos de entrada de los Grupos
         this.filter = 'identificador';
         this.$.sortDate.style.display = 'block'
         this.$.sortName.style.display = 'none'
+    },
+
+    filterDialog:function(){
+        this.fire('filterDialog')
     },
 
      // enlace con el componente <set-update>. Month y year serán los filtros para guardar la fecha de la revisión en el mes correspondiente en la agenda de Firebase
