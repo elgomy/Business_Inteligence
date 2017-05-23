@@ -31,6 +31,14 @@ formulario de entrada de denuncias de maltrato animal
       paper-radio-button{
         --paper-radio-button-checked-color:var(--accent-color);
       }
+
+        paper-button{
+        background: var(--accent-color);
+        color:white;
+        text-transform: capitalize;
+        border-radius: 25px;
+        padding: 7px
+      }
     </style>   
   
   
@@ -144,7 +152,7 @@ formulario de entrada de denuncias de maltrato animal
           this.reviewDate = this.expireDate;
           // formatamos la fecha y excluímos la hora
          this.formattedDate = this.reviewDate.toLocaleString().split(' ')[0]; 
-         console.log(this.formattedDate);
+        // console.log(this.formattedDate);
      
 
           // una vez guardado la fecha de vto, se oculta el botón de guardar y se muestra el de editar la fecha. Tambíen se oculta el radio-group

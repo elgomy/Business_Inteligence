@@ -246,6 +246,7 @@ editor con el que vamos poder guardar los datos de entrada de los Grupos
                 this.backList();
                  // enlace con <set-update> para limpiar el vencimiento seleccionado cuando se guarde un grupo
                 this.fire('iron-signal', {name: 'cleardate'});
+                this.fire('iron-signal', {name: 'counteradd', data: this.company.expireStamp});
               }.bind(this))
             .catch(function(error){
                 this.fire('negative-toast', 'error: ' + error);
@@ -277,6 +278,8 @@ editor con el que vamos poder guardar los datos de entrada de los Grupos
        this.$.query.ref.child(companyItem.$key).remove();
        this.$.queryUpdate.ref.child(companyItem.$key).remove();
        this.fire('iron-signal', {name: 'cleardate'});
+       // enlace con <company-list> para actualizar el contador
+        this.fire('iron-signal', {name: 'counteremove', data:companyItem.expireStamp});
      
     },
 

@@ -30,6 +30,14 @@ formulario de entrada de denuncias de maltrato animal
       paper-radio-button{
         --paper-radio-button-checked-color:var(--accent-color);
       }
+
+      paper-button{
+        background: var(--accent-color);
+        color:white;
+        text-transform: capitalize;
+        border-radius: 25px;
+        padding: 7px
+      }
     </style>   
   
   
@@ -46,7 +54,7 @@ formulario de entrada de denuncias de maltrato animal
     <p hidden$="{{display}}">Perfil Selecionado: {{profile}}</p>
    
 <paper-button raised id="saveProfile">salvar</paper-button>
-<paper-button raised id="editProfile">editar</paper-button>
+<paper-button raised id="editProfile">Editar</paper-button>
 
 <iron-signals on-iron-signal-cleardate="updateProfile"></iron-signals>
 <iron-signals on-iron-signal-firebasedate="editorProfile"></iron-signals>

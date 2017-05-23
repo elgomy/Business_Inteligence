@@ -1,6 +1,9 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/paper-fab/paper-fab.html">
 <link rel="import" href="../behaviors/input-behavior.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/iron-signals/iron-signals.html">
+
 
 <!-- componente <current-location.html> -->
 <link rel="import" href="company-bo.html">
@@ -19,12 +22,25 @@ formulario de entrada de denuncias de maltrato animal
       :host {
         display: block;
       }
+
+      iron-icon{
+        --iron-icon-fill-color:var(--accent-color)
+        }
+      paper-fab{
+        --paper-fab-background: var(--accent-color);
+        margin:auto;
+      }
+
     </style>   
 
+    <iron-signals on-iron-signal-setoldate="setoldate"></iron-signals>
+
 <iron-icon icon="clear" id="clearIcon"></iron-icon>  
-<company-bo company="{{item}}"></company-bo>
+<company-bo  id="company" company="{{item}}"></company-bo>
 
 <paper-fab icon="done" id="saveButton"></paper-fab>
+
+<paper-button raised on-tap="test">test</paper-button>
 
   </template>
 
@@ -38,12 +54,26 @@ formulario de entrada de denuncias de maltrato animal
          // objeto company donde guardaremos todos los datos de la denuncia, que vienen bindeados desde el componente <company-BI>
          item:{
           type:Object, 
+
           
           }, 
          path:Object,
          pathCalendar: Object,
          atualMonth:Number,
-         atualYear:Number
+         atualYear:Number,
+
+          dates:{
+          type:Array,
+          value: function(){
+              return []
+          }         
+        },
+
+        oldStamp:{
+          type:Number,
+          
+        }
+
         },   
 
        behaviors: [Polymer.inputBehavior],
@@ -51,7 +81,32 @@ formulario de entrada de denuncias de maltrato animal
           listeners:{
          'saveButton.tap': 'save',
          'clearIcon.tap': 'close'
-        },   
+        },  
+
+     //   observers:['dateChanged(item.expireDate)'],
+
+        setoldate:function(e,companyItem){
+            
+
+            this.oldStamp = companyItem.expireStamp;
+            console.log(this.oldStamp)
+        },
+      
+
+     /*   dateChanged:function (expireDate) {
+        //  console.log(expireDate);
+        var todayStamp = Date.now();
+        var period_45 = todayStamp + 3888000000;
+        //  console.log(this.item.expireStamp);
+          if (this.item.expireStamp >= period_45){
+              this.push('dates',expireDate);
+          };
+          
+
+          console.log(this.dates[1]);
+          //console.log(expireDate);
+        //  this.fire('iron-signal', {name: 'test', data:expireDate});
+        },  */
 
         // método para guardar los datos del Grupo en Firebase una vez editado. En este caso editamos las propiedades 'identificador' y 'setor'
       save:function(){ 
@@ -83,7 +138,21 @@ formulario de entrada de denuncias de maltrato animal
                 this.fire('positive-toast', 'Grupo editado');
                 this.close();
                 // enlace con <set-update> para limpiar el vencimiento seleccionado cuando se guarde un grupo
-               this.fire('iron-signal', {name: 'cleardate'});                
+               this.fire('iron-signal', {name: 'cleardate'});  
+
+               var todayStamp = Date.now();
+               var period_45 = todayStamp + 3888000000;
+
+               if (this.oldStamp < period_45 && this.item.expireStamp >= period_45){
+                  // enlace con <company-list> para actualizar el contador
+                  //  this.fire('iron-signal', {name: 'countereditminus', data:'minus'});
+                    this.fire('iron-signal', {name: 'counteredit', data:'minus'});
+
+               } else if(this.oldStamp >= period_45 && this.item.expireStamp < period_45){
+                  //  this.fire('iron-signal', {name: 'countereditplus', data:'plus'});
+                    this.fire('iron-signal', {name: 'counteredit', data:'plus'});
+               }               
+                      
               }.bind(this))
               .catch(function(error){
                   this.fire('negative-toast', 'error: ' + error);
