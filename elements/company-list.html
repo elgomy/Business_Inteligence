@@ -28,151 +28,101 @@ lista de denuncias creadas en Animilia y almacenadas en Firebase
 
 <dom-module id="company-list">
   <template>
-  <style include="shared-styles">
-
-  paper-dialog{
-        min-width: 220px;
-        max-width: 350px;
-
-        --paper-dialog:{
-            background: blue
-        
-        };
-
-        --paper-dialog-title:{
-          color:red;
-          text-align: center
-        }
-      
-      }
-
-  
-
-     
-      .dialogHeader{
-        text-align: center
-        background-color:blue;
-      }
-
-      .dialogContent{
-        margin-left: 10px
-      }
-
-
     
   </style>
      <style include="iron-flex iron-flex-alignment">
       :host {
         display: block;
+        --expansion-panel-base:{
+                      text-transform: uppercase;
+                      font-weight: bold;
+                      border-bottom:1px solid #eceff1;
+                      font-family: "Averta","Avenir W02","Avenir",Helvetica,Arial,sans-serif;
+                      font-size: 14px;
+        };
       
       }
-
-      paper-card{
-                
-            --paper-card:{
-              margin:auto;
-              width: 500px
-            }
-      }
-
-      paper-item{      
-         border-top:1px solid #eceff1;
-      } 
-    
-      paper-item:hover{
-        background-color: #fafafa;
-        
-      }
-
-   
-    /* el nombre del Grupo siempre en mayúsculas */
-      paper-item-body #companyId {
-        text-transform: uppercase;
-        font-weight: bold     
-      }  
 
       iron-icon{
         --iron-icon-width:20px;
       }
-
-      
-      
+    
       .container{
            @apply(--layout-vertical);
+
            @apply(--layout-center);
-           @apply(--layout-center-justified);
+          
             background-color: #fafafa;
-            height: 80px
-
+            height: 80px;
+           
       }
 
-      .span{
-        width: 200px;
-        margin-top:10px;
-      }
 
-   
 
-      paper-expansion-panel{
-      
 
-          --paper-expansion-panel-header: {
-                text-transform: uppercase;
-                font-weight: bold;
-                border-bottom:1px solid #eceff1;
-                font-family: "Averta","Avenir W02","Avenir",Helvetica,Arial,sans-serif;
-                font-size: 14px;
-                
+    paper-expansion-panel{
 
+         --paper-expansion-panel-header: {
+               var(--expansion-panel-base)
+                     
+               
           }
+    }
 
-          --paper-expansion-panel-summary: {
-              
-               font-size: 12px;
-          }
-
-          --paper-expansion-panel-content:{
-            border-bottom:1px solid #eceff1;
-          }
-        
-        
-
-      }
-
-      .panel{
+      .panelContent{
         @apply(--layout-horizontal);
         @apply(--layout-justified)
+      }
+
+      .acordo{
+         --paper-expansion-panel-header:{
+                      text-transform: uppercase;
+                      font-weight: bold;
+                      border-bottom:1px solid #eceff1;
+                      font-family: "Averta","Avenir W02","Avenir",Helvetica,Arial,sans-serif;
+                      font-size: 14px;
+                      color:#ff1744;
+         };
+         
+      }
+
+       .preventivo{
+         --paper-expansion-panel-header:{
+                      text-transform: uppercase;
+                      font-weight: bold;
+                      border-bottom:1px solid #eceff1;
+                      font-family: "Averta","Avenir W02","Avenir",Helvetica,Arial,sans-serif;
+                      font-size: 14px;
+                      color:#ff5722;
+         };
+         
+      }
+
+       .acompanhamento{
+           --paper-expansion-panel-header:{
+                      text-transform: uppercase;
+                      font-weight: bold;
+                      border-bottom:1px solid #eceff1;
+                      font-family: "Averta","Avenir W02","Avenir",Helvetica,Arial,sans-serif;
+                      font-size: 14px;
+                      color:#448aff;
+          };     
       }
 
     </style>
 
 <div class="container">
          
-          <span class="span" id="exp">Revisões vencidas: [[lengthExpired]]</span>
-          
-          <span class="span" id="forfive">Revisar < 45 dias: [[length45]]</span>
-                 
-         <paper-spinner-lite active id="spinner"></paper-spinner-lite>
+      <span class="span" id="exp">Revisões vencidas: [[lengthExpired]]</span>
+      <span class="span" id="forfive">Revisar < 45 dias: [[length45]]</span>             
+      <paper-spinner-lite active id="spinner"></paper-spinner-lite>
     
 </div>
-    <!--   <p>Grupos a revisar menos de 45 dias:</p>
- <div id="revisar"></div>
-
-  <p>Grupos vencidos:</p>
- <div id="vencidos"></div> -->
-    
-
-
-
-
-
-
+ 
 
 <!-- ENLACE CON MY-APP PARA LANZAR EL DIALOG DEL DATE-PICKER -->
 <iron-signals on-iron-signal-filter="fiterPeriod"></iron-signals>
-
 <iron-signals on-iron-signal-counteremove="counteremove"></iron-signals>
-
 <iron-signals on-iron-signal-counteradd="counteradd"></iron-signals>
 
 <!--
@@ -182,11 +132,12 @@ lista de denuncias creadas en Animilia y almacenadas en Firebase
 
 <iron-signals on-iron-signal-counteredit="counteredit"></iron-signals>
 
+
  
  <template id="template" is="dom-repeat" items="[[data]]" as="company" filter="{{computeFilter(startStamp,endStamp)}}" observe="item">  
 
-    <paper-expansion-panel header="[[company.identificador]]" summary="[[company.expireDate]]">
-      <div class="panel">
+    <paper-expansion-panel class$="{{conditionalClass(company.profile)}}" header="[[company.identificador]]" summary="[[company.expireDate]]">
+      <div class="panelContent">
        
         <div id="companyData">
           <p><b>Revisão:</b> [[company.expireDate]] </p> 
@@ -300,9 +251,32 @@ lista de denuncias creadas en Animilia y almacenadas en Firebase
           value: Date.now() + 3888000000
         },
 
+        acordo:{
+          type:Array,
+          value: function(){
+              return []
+          }         
+        },
+
+      
+
         length45:Number,
         lengthExpired: Number
         
+      },
+
+      conditionalClass:function(profile){
+          if(profile == 'Acordo'){
+            return 'acordo'
+          }
+
+          if(profile == 'Preventivo'){
+            return 'preventivo'
+          }
+
+          if(profile == 'Acompanhamento'){
+            return 'acompanhamento'
+          }
       },
 
       test:function(e,expireDate){
@@ -418,7 +392,8 @@ lista de denuncias creadas en Animilia y almacenadas en Firebase
     ready:function(){  
       this.lengthExpired = 0;  
       this.length45 = 0;
-      this.async(this.timer,[4000])
+      this.async(this.timer,[4000]);
+      this.async(this.setColor,[4000])
     //  console.log(this.company)
     },
 
@@ -454,7 +429,20 @@ lista de denuncias creadas en Animilia y almacenadas en Firebase
       }
 
       this.$.spinner.active = false;
+    },
+
+    setColor:function(){
+      for(i in this.data){
+
+        if (this.data[i].profile == 'Acordo'){
+          console.log(this.data[i].style)
+          this.push('acordo', this.data[i].identificador);
+          console.log(this.acordo)
     }
+  }
+  }
+
+
 
     });
   </script>
