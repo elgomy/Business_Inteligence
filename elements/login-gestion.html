@@ -34,12 +34,27 @@ elemento que nos permite hacer la gestion de los usuarios (login y cadastro) a t
         margin:auto;
          width: 400px;
 
+         
+
       } 
 
       img{
         width: 35px;
         height: 35px;
       }   
+
+      paper-tab{
+        font-family: "Averta","Avenir W02","Avenir",Helvetica,Arial,sans-serif;font-size: 14px;
+        --paper-tab-ink:var(--accent-color);   
+      }
+
+      paper-tabs{
+        --paper-tabs-selection-bar-color:var(--accent-color);
+        --paper-tabs-selection-bar:{
+          color:red;}
+      }
+
+
     </style>
 
     <firebase-auth app-name="form-polymerfire"
@@ -48,7 +63,7 @@ elemento que nos permite hacer la gestion de los usuarios (login y cadastro) a t
                    signed-in="{{signed}}"
                    status-known="{{statusKnown}}"
                    app="{{fbapp}}">
-    </firebase-auth>
+    </firebase-auth> 
 
     <iron-signals on-iron-signal-logout="logout"></iron-signals>
 
@@ -129,7 +144,11 @@ elemento que nos permite hacer la gestion de los usuarios (login y cadastro) a t
           statusKnown: Boolean,
 
           //objeto que nos devuelve <firebase-document> con los datos del usuario
-          perfilUsuario: Object,
+          perfilUsuario: {
+              type:Object,
+              notify: true
+          },
+          
           credential:String,
 
          },

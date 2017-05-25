@@ -2,6 +2,7 @@
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../bower_components/paper-input/paper-input.html">
 
+
 <dom-module id="login-signin">
   <template>
     <style>
@@ -16,6 +17,8 @@
        
 
        @apply(--layout-flex);
+
+    
       }
 
     /*  :host([signed-in]) { /*condicional de estilo que nos permite que cuando el usuario se loguee el componente se haga invisible
@@ -23,20 +26,42 @@
         pointer-events: none; 
       } */
 
-      paper-button > * {
-        vertical-align: middle;
-        text-transform: none;
+       paper-button{
+        background: var(--accent-color);
+        color:white;
+        text-transform: capitalize;
+        border-radius: 25px;
+        padding: 7px
       }
 
       img{
       height: 40px;
       width: 40px;
     } 
+
+    .inputs{
+        max-width: 400px;      
+        margin: auto
+      }
+
+      paper-input{
+        --paper-input-container-focus-color:var(--accent-color);
+
+         
+
+        
+      }
+
+
+      gold-email-input{
+        --paper-input-container-focus-color:var(--accent-color)
+      }
     </style>
     
     
     
     <div>
+
   <!--sign in con email y password -->
     <paper-input 
           id="emailInput"

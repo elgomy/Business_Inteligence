@@ -19,10 +19,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../bower_components/app-route/app-route.html">
 <link rel="import" href="../bower_components/iron-pages/iron-pages.html">
 <link rel="import" href="../bower_components/iron-selector/iron-selector.html">
+<link rel="import" href="../bower_components/iron-dropdown/iron-dropdown.html">
 <link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
 <link rel="import" href="../bower_components/paper-tooltip/paper-tooltip.html">
+<link rel="import" href="../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../bower_components/iron-signals/iron-signals.html">
+<link rel="import" href="../bower_components/iron-icons/communication-icons.html">
+<link rel="import" href="../bower_components/iron-icons/hardware-icons.html">
 <link rel="import" href="my-icons.html">
 
 <!--componentes especìficos de Animilia-->
@@ -104,6 +109,26 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         color: black;
         font-weight: bold;
       }
+       .dropdown-content{
+       
+        background: white;
+        width: 160px;
+        box-shadow: 0 15px 3px 0 rgba(0, 0, 0, 0.10), 0 15px 20px 0 rgba(0, 0, 0, 0.2), 0 3px 1px -2px rgba(0, 0, 0, 0.2); 
+        font-size: 15px;
+        border-radius: 5px;
+        color:blue;
+      } 
+
+      .card-content{
+        color:grey;
+      }
+
+      paper-card{
+        --paper-card-background-color:#f5f5f5;
+        --paper-card-header-text:{
+          font-size: 15px;
+        };
+      }
     </style>
 
     <!--inicializamos Firebase -->
@@ -114,6 +139,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             name="form-polymerfire"
             app="{{fbapp}}">
         </firebase-app>
+
+        <firebase-auth app-name="form-polymerfire"
+                   id="auth" 
+                   user="{{user}}" 
+                   signed-in="{{signed}}"
+                   status-known="{{statusKnown}}"
+                   app="{{fbapp}}">
+        </firebase-auth>
+
+         <firebase-document               
+                app-name="form-polymerfire"
+                path="/users/{{user.uid}}" 
+                data="{{perfilUsuario}}">
+       </firebase-document>
 
     <app-location route="{{route}}"></app-location>
     <app-route
@@ -140,9 +179,19 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <app-toolbar>
             <paper-icon-button icon="my-icons:menu" drawer-toggle></paper-icon-button>
             <div main-title>RISK 3.0</div>
+              <div id="user" hidden$="{{!signed}}">[[perfilUsuario.nombre]]</div>
+              <iron-icon icon="expand-more" id="expandIcon" hidden$="{{!signed}}" on-tap="openDrop"></iron-icon> 
 
+              <iron-dropdown id="profileDrop" horizontal-align="right" vertical-align="top" vertical-offset="23" horizontal-offset="20">
+              <div class="dropdown-content">
+                  <p>[[perfilUsuario.nombre]]</p>
+                  <iron-icon icon="communication:contact-mail"></iron-icon><span>Alterar e-mail</span>
+                   <iron-icon icon="hardware:keyboard"></iron-icon><span>Alterar senha</span>
+                  <iron-icon icon="exit-to-app" id="exitIcon" hidden$="{{!signed}}"></iron-icon><span>Sair</span>
+              </div>
+            </iron-dropdown>  
             
-           <iron-icon icon="exit-to-app" id="exitIcon" hidden$="{{signed}}"></iron-icon> 
+           
                   
 
             <paper-tooltip
@@ -188,6 +237,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               </div>
       </paper-dialog>
 
+      
+
 
   <!--toast -->
     <paper-toast id="positiveToast"></paper-toast>
@@ -213,6 +264,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
             },
 
+        perfilUsuario:Object,
+
         fbapp:Object,
 
         company:{
@@ -231,6 +284,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
          'delete': 'removeCompany',
          'filterDialog': 'filter',
          'exitIcon.tap': 'exit',
+         
         
          },
 
@@ -257,6 +311,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       _showPage404: function() {
         this.page = 'view404';
       },
+
+
 
       // enlace con el componente <company-list-BI>
       removeCompany:function(e,companyItem){
@@ -291,6 +347,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       exit:function(){
         this.fire('iron-signal', {name: 'logout', data:null});
+      },
+
+      openDrop:function(){
+       
+        this.$.profileDrop.open()
       },
 
 

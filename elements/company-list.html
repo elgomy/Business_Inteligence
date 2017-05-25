@@ -12,6 +12,7 @@
 
 <link rel="import" href="../bower_components/iron-signals/iron-signals.html">
 <link rel="import" href="../bower_components/iron-collapse/iron-collapse.html">
+<link rel="import" href="../bower_components/iron-dropdown/iron-dropdown.html">
 
 <link rel="import" href="../bower_components/paper-item/paper-item.html">
 
@@ -67,6 +68,10 @@ lista de denuncias creadas en Animilia y almacenadas en Firebase
                      
                
           }
+
+      --paper-expansion-panel-summary:{
+          font-size: 11px;
+      }
     }
 
       .panelContent{
@@ -118,22 +123,16 @@ lista de denuncias creadas en Animilia y almacenadas en Firebase
       <paper-spinner-lite active id="spinner"></paper-spinner-lite>
     
 </div>
- 
 
+
+ 
+ 
 <!-- ENLACE CON MY-APP PARA LANZAR EL DIALOG DEL DATE-PICKER -->
 <iron-signals on-iron-signal-filter="fiterPeriod"></iron-signals>
 <iron-signals on-iron-signal-counteremove="counteremove"></iron-signals>
 <iron-signals on-iron-signal-counteradd="counteradd"></iron-signals>
-
-<!--
-<iron-signals on-iron-signal-countereditminus="countereditminus"></iron-signals>
-
-<iron-signals on-iron-signal-countereditplus="countereditplus"></iron-signals> -->
-
 <iron-signals on-iron-signal-counteredit="counteredit"></iron-signals>
 
-
- 
  <template id="template" is="dom-repeat" items="[[data]]" as="company" filter="{{computeFilter(startStamp,endStamp)}}" observe="item">  
 
     <paper-expansion-panel class$="{{conditionalClass(company.profile)}}" header="[[company.identificador]]" summary="[[company.expireDate]]">
@@ -155,27 +154,7 @@ lista de denuncias creadas en Animilia y almacenadas en Firebase
 
     </paper-expansion-panel>
 
-<!--
-    <paper-item id="test">
-        <paper-item-body two-line>
-          <div id="companyId" class="blue">[[company.identificador]]</div>
-          <div secondary>Revisão: [[company.expireDate]] <iron-icon icon="warning" hidden$="[[warningHide]]"></iron-icon></div>
 
-          
-        <iron-collapse id$="collapse{{company.identificador}}">
-              <iron-icon icon="mail" company="[[company]]" on-tap="emailAlert"></iron-icon>
-        <iron-icon icon="description" company="[[company]]" on-tap="edition"></iron-icon>
-        <iron-icon icon="clear" company="[[company]]" on-tap="remove" alt="deletar"></iron-icon>
-          </iron-collapse>
-
-        </paper-item-body>
-         
-        <iron-icon icon="expand-more" on-tap="showDetails"></iron-icon>
-        <iron-icon icon="info-outline" on-tap="showInfo"></iron-icon>
-
-
-
-    </paper-item> -->
 
     <paper-dialog id$="dialog{{company.identificador}}">
          <h2 class="dialogHeader">[[company.identificador]]</h2>
@@ -193,23 +172,6 @@ lista de denuncias creadas en Animilia y almacenadas en Firebase
 
 </template> 
 
-
-
-<!--
- <template id="template" is="dom-repeat" items="[[data]]" as="company" filter="{{computeFilter(startStamp,endStamp)}}">  
-    <paper-collapse-item header="[[company.identificador]]">
-        
-         <iron-icon icon="mail" company="[[company]]" on-tap="emailAlert"></iron-icon>
-        <iron-icon icon="description" company="[[company]]" on-tap="edition"></iron-icon>
-        <iron-icon icon="clear" company="[[company]]" on-tap="remove" alt="deletar"></iron-icon>
-             <iron-icon icon="mail" company="[[company]]" on-tap="emailAlert"></iron-icon>
-        <iron-icon icon="description" company="[[company]]" on-tap="edition"></iron-icon>
-        <iron-icon icon="clear" company="[[company]]" on-tap="remove" alt="deletar"></iron-icon>
-    </paper-collapse-item>
-</template>   -->
-
-
- 
 
   </template>
 
@@ -258,13 +220,14 @@ lista de denuncias creadas en Animilia y almacenadas en Firebase
           }         
         },
 
-      
-
+        // número de elementos en los arrays de los grupos vencidos y a revisar en menos de 45 dias
         length45:Number,
         lengthExpired: Number
         
       },
 
+   
+      // estilos condicionales en función del perfil de la empresa
       conditionalClass:function(profile){
           if(profile == 'Acordo'){
             return 'acordo'
@@ -278,16 +241,6 @@ lista de denuncias creadas en Animilia y almacenadas en Firebase
             return 'acompanhamento'
           }
       },
-
-      test:function(e,expireDate){
-        console.log(expireDate)
-      },
-
-   //  observers:['cambio(alert45.splices)'],
-
-   //  cambio:function (value) {
-   //    console.log(value)
-   //  },
 
     // método que actualiza el contador cuando eliminamos algún grupo. Enlace con el mètodo 'removeItem' de <bi-editor> a travès de iron-signal
      counteremove:function (e,expireStamp) {
@@ -306,9 +259,8 @@ lista de denuncias creadas en Animilia y almacenadas en Firebase
      },
 
       counteradd:function (e,expireStamp) {
-    //   var todayStamp = Date.now();
-     //  var period_45 = todayStamp + 3888000000;
-
+        console.log('hola');
+        console.log(expireStamp);
        if(expireStamp < this.period_45){
         this.length45 = this.length45 +1; 
         return false
@@ -316,13 +268,6 @@ lista de denuncias creadas en Animilia y almacenadas en Firebase
 
      },
 
-   //  countereditminus:function(e){
-  //        this.length45 = this.length45 -1; 
-    // },
-
-   //  countereditplus:function(e){
-   //     this.length45 = this.length45 +1; 
-   //  },
 
      counteredit:function(e,plusminus){
         if (plusminus == 'plus'){

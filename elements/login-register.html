@@ -18,16 +18,39 @@ elemento para hacer el registro en firebase a travès de email y password
       
       }
 
+       .inputs{
+        max-width: 400px;      
+        margin: auto
+      }
+
+      paper-input{
+        --paper-input-container-focus-color:var(--accent-color)
+      }
+
+      gold-email-input{
+        --paper-input-container-focus-color:var(--accent-color)
+      }
+
+       paper-button{
+        background: var(--accent-color);
+        color:white;
+        text-transform: capitalize;
+        border-radius: 25px;
+        padding: 7px
+      }
+
     /*  :host([signed-in]) { /*condicional de estilo que nos permite que cuando el usuario se loguee el componente se haga invisible
         opacity: 0;
         pointer-events: none; 
       } */
     </style>
-    
+    <div class=inputs>    
     <paper-input label="Nome" value="{{data.name}}"></paper-input>
     <paper-input label="E-mail" value="{{data.email}}" auto-validate error-message="email invalido"></paper-input>
     <paper-input label="Senha" type="password" value="{{data.password}}"></paper-input>
     <paper-button raised on-tap="signUp">Criar Conta</paper-button>
+    </div>
+
 
     
       

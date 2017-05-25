@@ -18,12 +18,31 @@ elemento para hacer el registro en firebase a travès de email y password
       :host {
        
       }
+
+       paper-button{
+        background: var(--accent-color);
+        color:white;
+        text-transform: capitalize;
+        border-radius: 25px;
+        padding: 7px
+      }
+
+      .inputs{
+        max-width: 400px;      
+        margin: auto
+      }
+
+       paper-input{
+        --paper-input-container-focus-color:var(--accent-color)
+      }
+
+      
     </style>
-    <h2>Upate</h2>
+  
      <paper-input label="Senha" type="password" value="{{data.password}}"></paper-input>
     <a href="#" on-click="sendEmailPass">Esqueci minha senha</a>
       <paper-button raised on-tap="deleteUser">Deletar</paper-button>
-      <h3>atualizar E-mail</h3>
+      
       <paper-input label="E-mail" value="{{data.email}}"></paper-input>
       <paper-button raised on-tap="updateEmail">Atualizar E-mail</paper-button>
        <paper-button raised on-tap="updatePass">Atualizar Senha</paper-button>

@@ -4,6 +4,7 @@
 <link rel="import" href="../bower_components/iron-icon/iron-icon.html">
 <link rel="import" href="../bower_components/iron-icons/av-icons.html">
 <link rel="import" href="../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../bower_components/iron-dropdown/iron-dropdown.html">
 <link rel="import" href="../bower_components/iron-signals/iron-signals.html">
 <link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 <!-- paper elements-->
@@ -42,15 +43,48 @@ editor con el que vamos poder guardar los datos de entrada de los Grupos
 
       .filterIcons{
         @apply(--layout-horizontal);
-      
-        
+           
       }
 
       iron-icon{
         --iron-icon-fill-color:var(--accent-color);
       }
-      
-     
+
+      #infoIcon{
+         --iron-icon-fill-color:grey;
+      } 
+
+      .dropdown-content{
+       
+        background: white;
+        width: 330px;
+        box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2); 
+        font-size: 13px
+      }
+
+      #normal{
+        color:grey;
+      }
+
+      #acompanhamento{
+        color:#448aff;
+      }
+
+      #preventivo{
+        color:#ff5722;
+      }
+
+      #acordo{
+         color:#ff1744;
+      }
+
+      span{
+        font-weight: bold
+      }
+
+      p{
+        margin-left: 10px
+      }
     
     </style>
 
@@ -94,15 +128,26 @@ editor con el que vamos poder guardar los datos de entrada de los Grupos
     </div>
 
     <!-- lista de Grupos -->
-    <div name="list">       
+    <div name="list">  
+     <iron-icon  icon="info" id="infoIcon" on-tap="openDrop"></iron-icon>  
+          <iron-dropdown id="infoDrop" horizontal-align="left" vertical-align="top" vertical-offset="23">
+              <div class="dropdown-content">
+                <p><span id="normal">Normal:</span> grupos em situaçao normal</p>
+                <p><span id="acompanhamento">Acompanhamento:</span> grupos com ponto de atençao</p>
+                <p><span id="preventivo">Preventivo:</span> grupos com produto preventivo</p>
+                <p><span id="acordo">Acordo:</span> grupos com acordo vigente</p>
+              </div>
+          </iron-dropdown>    
       <paper-fab icon="add" id="createcompany"></paper-fab>  
-
+       
       <div class="filterIcons">
         <iron-icon class="flexchild" icon="swap-vert" id="sortDate"></iron-icon>  
         <iron-icon  icon="av:sort-by-alpha" id="sortName"></iron-icon > 
-        <iron-icon  icon="event" on-tap="filterDialog" id="calendar"></iron-icon>      
+        <iron-icon  icon="event" on-tap="filterDialog" id="calendar"></iron-icon>  
+              
       </div>
 
+       
       <company-list data="[[data]]" company="[[company]]"></company-list>       
     </div>
 
@@ -168,6 +213,11 @@ editor con el que vamos poder guardar los datos de entrada de los Grupos
          'sortName.tap': 'sortName'             
       },
 
+      openDrop:function(){
+       
+        this.$.infoDrop.open()
+      },
+
      // enlace con el método 'timer' de <company-list>, para actualizar en Firebase las propiedades 'expireDate' y 'expireStamp' de aquellos grupos vencidos
      setExpired:function(e,dato){
       console.log(dato);
@@ -230,6 +280,7 @@ editor con el que vamos poder guardar los datos de entrada de los Grupos
           var companyUpdates = {};
           companyUpdates[newCompanyKey] = this.company;
 
+
             // tenemos que usar 'update' en lugar de 'push' porque este último siempre genera una 'key', por lo que se generarían 2 keys
           this.$.queryUpdate.ref.update(calendarUpdates)
             .catch(function(error){
@@ -238,15 +289,16 @@ editor con el que vamos poder guardar los datos de entrada de los Grupos
 
           this.$.query.ref.update(companyUpdates)
             .then(function(){
-
+                this.fire('iron-signal', {name: 'counteradd', data: this.company.expireStamp});
                 this.fire('positive-toast', 'Grupo cadastrado');
                     // después de introducir los valores en los input se limpia el texto. Fijamos tanto la fecha como la dirección, ya que si los limpiamos el sistema no genera de nuevo esos valores. Behavior 'animilia-behavior'
                 this.resetCompany();
                    // una vez guardada la denuncia, volvemos a mostrar el listado de denuncias 
                 this.backList();
                  // enlace con <set-update> para limpiar el vencimiento seleccionado cuando se guarde un grupo
+                
                 this.fire('iron-signal', {name: 'cleardate'});
-                this.fire('iron-signal', {name: 'counteradd', data: this.company.expireStamp});
+                
               }.bind(this))
             .catch(function(error){
                 this.fire('negative-toast', 'error: ' + error);
