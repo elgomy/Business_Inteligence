@@ -17,6 +17,10 @@
 <link rel="import" href="../behaviors/input-behavior.html">
 <link rel="import" href="../behaviors/BI-behavior.html">
 
+<link rel="import" href="../bower_components/neon-animation/web-animations.html">
+<link rel="import" href="../bower_components/neon-animation/animations/scale-up-animation.html">
+<link rel="import" href="../bower_components/neon-animation/animations/fade-out-animation.html">
+
 <!--
 `bi-editor`
 editor con el que vamos poder guardar los datos de entrada de los Grupos
@@ -51,7 +55,8 @@ editor con el que vamos poder guardar los datos de entrada de los Grupos
       }
 
       #infoIcon{
-         --iron-icon-fill-color:grey;
+        --iron-icon-fill-color:#e53935;
+      
       } 
 
       .dropdown-content{
@@ -113,6 +118,7 @@ editor con el que vamos poder guardar los datos de entrada de los Grupos
          
     <!-- signal lanzado por el método 'dialogAccept' de <my-app> -->
     <iron-signals on-iron-signal-delete="removeItem"></iron-signals>
+   
      
     <iron-pages selected="{{section}}" attr-for-selected="name">
 
@@ -129,8 +135,8 @@ editor con el que vamos poder guardar los datos de entrada de los Grupos
 
     <!-- lista de Grupos -->
     <div name="list">  
-     <iron-icon  icon="info" id="infoIcon" on-tap="openDrop"></iron-icon>  
-          <iron-dropdown id="infoDrop" horizontal-align="left" vertical-align="top" vertical-offset="23">
+   
+          <iron-dropdown id="infoDrop" horizontal-align="left" vertical-align="top" vertical-offset="23" >
               <div class="dropdown-content">
                 <p><span id="normal">Normal:</span> grupos em situaçao normal</p>
                 <p><span id="acompanhamento">Acompanhamento:</span> grupos com ponto de atençao</p>
@@ -138,9 +144,12 @@ editor con el que vamos poder guardar los datos de entrada de los Grupos
                 <p><span id="acordo">Acordo:</span> grupos com acordo vigente</p>
               </div>
           </iron-dropdown>    
-      <paper-fab icon="add" id="createcompany"></paper-fab>  
+      <paper-fab icon="add" id="createcompany"></paper-fab> 
+
+        
        
       <div class="filterIcons">
+      <iron-icon  icon="info" id="infoIcon" on-tap="openDrop"></iron-icon>  
         <iron-icon class="flexchild" icon="swap-vert" id="sortDate"></iron-icon>  
         <iron-icon  icon="av:sort-by-alpha" id="sortName"></iron-icon > 
         <iron-icon  icon="event" on-tap="filterDialog" id="calendar"></iron-icon>  
@@ -218,6 +227,8 @@ editor con el que vamos poder guardar los datos de entrada de los Grupos
         this.$.infoDrop.open()
       },
 
+      
+
      // enlace con el método 'timer' de <company-list>, para actualizar en Firebase las propiedades 'expireDate' y 'expireStamp' de aquellos grupos vencidos
      setExpired:function(e,dato){
       console.log(dato);
@@ -250,8 +261,6 @@ editor con el que vamos poder guardar los datos de entrada de los Grupos
         this.month = dateUpdate.month;
         this.year = dateUpdate.year;
         this.dateError = '';
-       
-
      },
   
       // método para guardar los datos de la denuncia en Firebase
@@ -260,9 +269,7 @@ editor con el que vamos poder guardar los datos de entrada de los Grupos
           this.fire('negative-toast', 'você deve estar autenticado');
           return false;
         } 
-
-       
-    
+  
         if(this.company.identificador && this.company.setor && this.company.expireDate && this.company.profile){
         
           var calendarData = {
@@ -289,7 +296,11 @@ editor con el que vamos poder guardar los datos de entrada de los Grupos
 
           this.$.query.ref.update(companyUpdates)
             .then(function(){
-                this.fire('iron-signal', {name: 'counteradd', data: this.company.expireStamp});
+                // enlace con <company-list>
+                this.fire('iron-signal', {name: 'counter', data: {
+                                                                    'stamp':this.company.expireStamp,
+                                                                    'action':'add'}
+                                                                                                  });
                 this.fire('positive-toast', 'Grupo cadastrado');
                     // después de introducir los valores en los input se limpia el texto. Fijamos tanto la fecha como la dirección, ya que si los limpiamos el sistema no genera de nuevo esos valores. Behavior 'animilia-behavior'
                 this.resetCompany();
@@ -331,7 +342,10 @@ editor con el que vamos poder guardar los datos de entrada de los Grupos
        this.$.queryUpdate.ref.child(companyItem.$key).remove();
        this.fire('iron-signal', {name: 'cleardate'});
        // enlace con <company-list> para actualizar el contador
-        this.fire('iron-signal', {name: 'counteremove', data:companyItem.expireStamp});
+       this.fire('iron-signal', {name: 'counter', data: {
+                                                            'stamp':companyItem.expireStamp,
+                                                             'action':'remove'}
+                                                                                });
      
     },
 

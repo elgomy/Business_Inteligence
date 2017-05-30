@@ -1,6 +1,8 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/iron-collapse/iron-collapse.html">
+
 <!-- behaviors-->
 <link rel="import" href="../behaviors/firebase-behavior.html">
 <link rel="import" href="../behaviors/login-behavior.html">
@@ -33,19 +35,68 @@ elemento para hacer el registro en firebase a travès de email y password
       }
 
        paper-input{
-        --paper-input-container-focus-color:var(--accent-color)
+        --paper-input-container-focus-color:var(--accent-color);
+        --paper-input-container-label:{
+              font-size: 0.85em;};
       }
 
+      .sendPass{
+       
+        margin-top: 20px;
+        text-align: center
+      }
+      
+      .sendPass a{
+        color:var(--accent-color);
+        text-decoration: none;
+       
+      }
+
+      iron-icon{
+        --iron-icon-fill-color:#e53935;
+      }
+
+      .title{
+        margin-top: 20px
+      }
+
+       @media (max-width: 400px) {
+        .sendPass{
+        
+         
+           max-width: 230px;
+        }
+
+        @media (max-width: 400px) {
+          .inputs{
+              max-width: 230px;  
+              margin-left: 1px
+          }
+
+          #updatePass{
+            margin-top: 8px
+          }
+        }
       
     </style>
-  
-     <paper-input label="Senha" type="password" value="{{data.password}}"></paper-input>
-    <a href="#" on-click="sendEmailPass">Esqueci minha senha</a>
-      <paper-button raised on-tap="deleteUser">Deletar</paper-button>
-      
-      <paper-input label="E-mail" value="{{data.email}}"></paper-input>
-      <paper-button raised on-tap="updateEmail">Atualizar E-mail</paper-button>
-       <paper-button raised on-tap="updatePass">Atualizar Senha</paper-button>
+      <div class="sendPass">
+      <a href="#" on-click="sendEmailPass">Esqueci minha senha</a>  
+      </div>
+     <iron-icon icon="settings" on-tap="toggle"></iron-icon> 
+      <div class="inputs">
+      <iron-collapse id="collapse">
+          <div class="title">Deseja deletar sua conta?</div>
+          <paper-input label="Senha" type="password" value="{{data.password}}"></paper-input>
+          <paper-button raised on-tap="deleteUser">Deletar usuario</paper-button>
+
+          <div class="title">Deseja atualizar seu e-mail ou sua senha?</div>
+          <paper-input label="E-mail" value="{{data.email}}"></paper-input>
+          <paper-button raised on-tap="updateEmail">Atualizar E-mail</paper-button>
+          <paper-button id="updatePass" raised on-tap="updatePass">Atualizar Senha</paper-button>
+      </iron-collapse>
+      </div>
+
+    
     
     
       
@@ -173,6 +224,10 @@ elemento para hacer el registro en firebase a travès de email y password
             }
           this.fire('negative-toast','Você está cadastrado com uma Rede Social!');
       },
+
+      toggle: function() {
+        this.$.collapse.toggle();
+      }
   
 
 

@@ -1,6 +1,7 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../bower_components/iron-icon/iron-icon.html">
 
 
 <dom-module id="login-signin">
@@ -32,7 +33,10 @@
         text-transform: capitalize;
         border-radius: 25px;
         padding: 7px
+        
       }
+
+
 
       img{
       height: 40px;
@@ -46,15 +50,21 @@
 
       paper-input{
         --paper-input-container-focus-color:var(--accent-color);
-
-         
-
+        --paper-input-container-label:{
+              font-size: 0.85em;};
         
       }
 
 
       gold-email-input{
         --paper-input-container-focus-color:var(--accent-color)
+      }
+
+      @media (max-width: 400px) {
+        .inputs{
+        max-width: 230px;  
+         margin-left: 1px
+        }
       }
     </style>
     
@@ -63,17 +73,18 @@
     <div>
 
   <!--sign in con email y password -->
+  <div class="inputs">
     <paper-input 
-          id="emailInput"
-          
+          id="emailInput"   
           label="E-mail" 
-          value="{{dato.email}}"
-          >
+          value="{{dato.email}}">
     </paper-input>
+    <div id="button">
     <paper-input required label="Senha" type="password" value="{{dato.password}}"></paper-input>
+    </div>
     <paper-button raised on-tap="signEmail">Entrar</paper-button>
     </div>
-
+</div>
   
    
   </template>

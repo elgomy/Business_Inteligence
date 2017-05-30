@@ -5,6 +5,7 @@
 <link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
 <link rel="import" href="../bower_components/paper-expansion-panel/paper-expansion-panel.html">
 <link rel="import" href="../bower_components/paper-dialog-behavior/paper-dialog-shared-styles.html">
+<link rel="import" href="../bower_components/polymerfire/firebase-auth.html">
 
 <link rel="import" href="../bower_components/paper-spinner/paper-spinner-lite.html">
 <link rel="import" href="../bower_components/paper-collapse-item/paper-collapse-item.html">
@@ -39,7 +40,7 @@ lista de denuncias creadas en Animilia y almacenadas en Firebase
                       font-weight: bold;
                       border-bottom:1px solid #eceff1;
                       font-family: "Averta","Avenir W02","Avenir",Helvetica,Arial,sans-serif;
-                      font-size: 14px;
+                      font-size: 0.8em;
         };
       
       }
@@ -50,27 +51,18 @@ lista de denuncias creadas en Animilia y almacenadas en Firebase
     
       .container{
            @apply(--layout-vertical);
-
-           @apply(--layout-center);
-          
+           @apply(--layout-center);      
             background-color: #fafafa;
-            height: 80px;
-           
+            height: 80px;          
       }
 
-
-
-
     paper-expansion-panel{
-
          --paper-expansion-panel-header: {
-               var(--expansion-panel-base)
-                     
-               
+               var(--expansion-panel-base)            
           }
 
       --paper-expansion-panel-summary:{
-          font-size: 11px;
+          font-size: 0.8em;
       }
     }
 
@@ -85,7 +77,7 @@ lista de denuncias creadas en Animilia y almacenadas en Firebase
                       font-weight: bold;
                       border-bottom:1px solid #eceff1;
                       font-family: "Averta","Avenir W02","Avenir",Helvetica,Arial,sans-serif;
-                      font-size: 14px;
+                      font-size: 0.8em;
                       color:#ff1744;
          };
          
@@ -97,7 +89,7 @@ lista de denuncias creadas en Animilia y almacenadas en Firebase
                       font-weight: bold;
                       border-bottom:1px solid #eceff1;
                       font-family: "Averta","Avenir W02","Avenir",Helvetica,Arial,sans-serif;
-                      font-size: 14px;
+                      font-size: 0.8em;
                       color:#ff5722;
          };
          
@@ -109,29 +101,33 @@ lista de denuncias creadas en Animilia y almacenadas en Firebase
                       font-weight: bold;
                       border-bottom:1px solid #eceff1;
                       font-family: "Averta","Avenir W02","Avenir",Helvetica,Arial,sans-serif;
-                      font-size: 14px;
+                      font-size: 0.8em;
                       color:#448aff;
           };     
       }
 
     </style>
 
-<div class="container">
+
+    <firebase-auth app-name="form-polymerfire"
+                   id="auth" 
+                   user="{{user}}">                 
+    </firebase-auth> 
+
+    
+    <iron-signals on-iron-signal-filter="fiterPeriod"></iron-signals>
+    
+    <iron-signals on-iron-signal-counter="counter"></iron-signals>
+    <iron-signals on-iron-signal-counteredit="counteredit"></iron-signals>
+    <iron-signals on-iron-signal-settimer="settimer"></iron-signals>
+
+    <div class="container">
          
       <span class="span" id="exp">Revisões vencidas: [[lengthExpired]]</span>
       <span class="span" id="forfive">Revisar < 45 dias: [[length45]]</span>             
-      <paper-spinner-lite active id="spinner"></paper-spinner-lite>
+      <paper-spinner-lite active="{{user}}" id="spinner"></paper-spinner-lite>
     
-</div>
-
-
- 
- 
-<!-- ENLACE CON MY-APP PARA LANZAR EL DIALOG DEL DATE-PICKER -->
-<iron-signals on-iron-signal-filter="fiterPeriod"></iron-signals>
-<iron-signals on-iron-signal-counteremove="counteremove"></iron-signals>
-<iron-signals on-iron-signal-counteradd="counteradd"></iron-signals>
-<iron-signals on-iron-signal-counteredit="counteredit"></iron-signals>
+    </div>
 
  <template id="template" is="dom-repeat" items="[[data]]" as="company" filter="{{computeFilter(startStamp,endStamp)}}" observe="item">  
 
@@ -190,24 +186,21 @@ lista de denuncias creadas en Animilia y almacenadas en Firebase
         // propiedad a la que le atribuiremos el valor de la fecha de inicio seleccionada en el date-picker de Vaadin y que la usaremos para hacer el filtro a travès de la propiedad computada 'computeFilter'
         startStamp: Number,
         endStamp: Number,
-        warningHide:{
-          type:Boolean,
-          value:true
-        },
-
+        // array donde guardaremos los grupos a revisar < 45 dias
         alert45:{
           type:Array,
           value: function(){
               return []
           }         
         },
-
+        // array donde guardaremos los grupos con revisiones vencidas
          expired:{
           type:Array,
           value: function(){
               return []
           }         
         },
+        // stamp 45 dias
         period_45:{
           type:Number,
           value: Date.now() + 3888000000
@@ -226,8 +219,168 @@ lista de denuncias creadas en Animilia y almacenadas en Firebase
         
       },
 
+      // Handling events in dom-repeat templates https://www.polymer-project.org/1.0/docs/devguide/templates
+    /*  showDetails:function(e,detail,sender){
+        var id = e.model.company.identificador;
+        var selector = '#collapse' + id;
+        this.$$(selector).toggle();
+      },
+
+       showInfo:function(e,detail,sender){
+        var id = e.model.company.identificador;
+        var selector = '#dialog' + id;
+        this.$$(selector).open();
+      }, */
+
+      ////////////   CODIGO PARA LANZAR LAS EVENTOS PARA BORRAR, EDITRAR, ENVIAR LOS GRUPOS /////////
+
+       // el evento 'delete' se recibe en el componente <my-app> para poder abrir el 'dialog' 
+    remove:function(e) {   
+        var companyItem = e.currentTarget.company;
+        this.fire('delete', companyItem) 
+      },
+      // enlace con <bi-editor>
+    edition:function(e) {    
+        var companyItem = e.currentTarget.company;
+        this.fire('edition', companyItem);
+        this.fire('iron-signal', {name: 'setoldate', data: companyItem});
+       // console.log(companyItem) 
+      },
+
+    send:function(e) {    
+        var companyItem = e.currentTarget.company;
+        this.fire('send', companyItem) 
+      }, 
+
+
+            // envio de la denuncia por email. El usuario tiene que tener un gestor de correo, sino no funciona. Como alternativa podemos elaborar codigo en NodeJS
+    emailAlert:function(e){
+      var company = e.currentTarget.company;
+      window.location.href = "mailto:" + company.email
+                         +"?subject=" + "Revisão da empresa " + company.identificador.toUpperCase()
+                          +"&body="+  "Prezado     ," + "%0D%0A" + "%0D%0A" + "La empresa " + company.identificador.toUpperCase() + " precisa ser revisada até o dia " + company.expireDate + ". Favor atualizar a documentação" + "%0D%0A" + "%0D%0A" + "Obrigado"
+    }, 
+
+
+  /////////////////////////////////////////////////////////////////////////////////////////////////
+      
+       // enlace con my-app. En el paràmetro 'period' recibimos el objeto que contiene las fechas seleccionadas en el 'date-picker'
+    fiterPeriod:function(e,period){
+        this.startStamp = period.startStamp;
+        this.endStamp = period.endStamp
+      },
+
+      // filtro dinàmico que variarà en función del valor de las propiedades 'startStamp' y 'endStamp'
+    computeFilter:function(startStamp,endStamp){
+        if (!startStamp || !endStamp){
+          return null // si no existen las 2 propiedades no se aplica el filtro
+        }else{
+          return function(item){
+            return (item.expireStamp >= startStamp) && (item.expireStamp <= endStamp+86400000) // 86400000 corresponden a 1 dia. Si no hacemos esto el filtro no incluirà aquellas grupos cuya data de revisiòn sea igual a la fecha de vencimiento seleccionada en el date-picker, porque tenemos que considerar que el timestamp cambia a cada segundo.
+            }                              
+        }        
+    }, 
+
+    ////////  CODIGO DE LOS CONTADORES 'REVISOES VENCIDAS' Y 'REVISAR < 45 DIAS'//////////////////////
+
+       // método que actualiza el contador cuando eliminamos algún grupo. Enlace con el mètodo 'removeItem' de <bi-editor> a travès de iron-signal
+  /*  counteremove:function (e,expireStamp) {
+
+      if (expireStamp == 'vencido'){
+        this.lengthExpired = this.lengthExpired -1 
+        return false
+      }
+
+      if(expireStamp < this.period_45){
+        this.length45 = this.length45 -1; 
+        return false
+      }
+     },
+
+    counteradd:function (e,expireStamp) {
+        
+       if(expireStamp < this.period_45){
+        this.length45 = this.length45 +1; 
+        return false
+        }
+     }, */
+
+    // enlace con <bi-editor>
+    counter:function (e,data) {
+        
+       if(data.action == 'add' && data.stamp < this.period_45){
+          this.length45 = this.length45 +1; 
+          return false
+        }
+        if (data.action == 'remove' && data.stamp == 'vencido'){
+          this.lengthExpired = this.lengthExpired -1 
+          return false
+        }
+        if (data.action == 'remove' && data.stamp < this.period_45){
+          this.length45 = this.length45 -1; 
+          return false
+        }
+
+     },
+     // enlace con <company-edit>
+    counteredit:function(e,plusminus){
+        if (plusminus == 'plus'){
+           this.length45 = this.length45 +1; 
+
+        } else if (plusminus == 'minus')
+            this.length45 = this.length45 -1
+     },
    
-      // estilos condicionales en función del perfil de la empresa
+    // enlace con <login-gestion> de manera que se actualiza el contador cuando el usuario hace login o logout
+    settimer:function(e,value){  
+
+        if (value == 'set'){
+            this.length45 = this.alert45.length; 
+            this.lengthExpired = this.expired.length ; 
+            this.async(this.timer,[3500]);
+            //  this.async(this.setColor,[4000])
+        } else if (value == 'reset'){
+            this.length45 = 0;
+            this.period_45 = 0;
+        }        
+    },
+
+    ready:function(){  
+   
+      this.lengthExpired = 0;  
+      this.length45 = 0;
+      this.async(this.timer,[3500]);
+     // this.async(this.setColor,[4000])
+    //  console.log(this.company)    
+    },
+
+    // método que acciona el control de las empresas cuya revisión debe ser dentro de los próximos 45 dias, y aquellas que ya vencieron
+    timer:function(){       
+      
+      var todayStamp = Date.now();    
+          
+      for(i in this.data){
+
+        if (this.data[i].expireStamp == 'vencido' || this.data[i].expireStamp <= todayStamp) {            
+          // enlace con <bi-editor> para actualizar las propiedades 'expireStamp' y 'expireDate' para 'vencido'
+          this.fire('setExpired', this.data[i].$key);        
+          this.push('expired',this.data[i].identificador);      
+          this.lengthExpired = this.expired.length ;       
+        }
+      
+        else if (this.data[i].expireStamp < this.period_45){
+               
+         this.push('alert45',this.data[i].identificador);        
+         this.length45 = this.alert45.length;    
+        }
+      }
+
+      this.$.spinner.active = false;
+    },
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////
+
+         // estilos condicionales en función del perfil de la empresa
       conditionalClass:function(profile){
           if(profile == 'Acordo'){
             return 'acordo'
@@ -242,150 +395,14 @@ lista de denuncias creadas en Animilia y almacenadas en Firebase
           }
       },
 
-    // método que actualiza el contador cuando eliminamos algún grupo. Enlace con el mètodo 'removeItem' de <bi-editor> a travès de iron-signal
-     counteremove:function (e,expireStamp) {
-     // var todayStamp = Date.now();
-     // var period_45 = todayStamp + 3888000000;
-
-      if (expireStamp == 'vencido'){
-          this.lengthExpired = this.lengthExpired -1 
-        return false
-      }
-
-      if(expireStamp < this.period_45){
-        this.length45 = this.length45 -1; 
-        return false
-      }
-     },
-
-      counteradd:function (e,expireStamp) {
-        console.log('hola');
-        console.log(expireStamp);
-       if(expireStamp < this.period_45){
-        this.length45 = this.length45 +1; 
-        return false
-      }
-
-     },
-
-
-     counteredit:function(e,plusminus){
-        if (plusminus == 'plus'){
-           this.length45 = this.length45 +1; 
-        } else if (plusminus == 'minus')
-            this.length45 = this.length45 -1
-     },
-
-      // Handling events in dom-repeat templates https://www.polymer-project.org/1.0/docs/devguide/templates
-      showDetails:function(e,detail,sender){
-        var id = e.model.company.identificador;
-        var selector = '#collapse' + id;
-        this.$$(selector).toggle();
-      },
-
-       showInfo:function(e,detail,sender){
-        var id = e.model.company.identificador;
-        var selector = '#dialog' + id;
-        this.$$(selector).open();
-      },
-
-       // el evento 'delete' se recibe en el componente <my-app> para poder abrir el 'dialog' 
-      remove:function(e) {   
-        var companyItem = e.currentTarget.company;
-        this.fire('delete', companyItem) 
-      },
-      // enlace con <bi-editor>
-      edition:function(e) {    
-        var companyItem = e.currentTarget.company;
-        this.fire('edition', companyItem);
-        this.fire('iron-signal', {name: 'setoldate', data: companyItem});
-       // console.log(companyItem) 
-      },
-
-      send:function(e) {    
-        var companyItem = e.currentTarget.company;
-        this.fire('send', companyItem) 
-      },  
-      
-       // enlace con my-app. En el paràmetro 'period' recibimos el objeto que contiene las fechas seleccionadas en el 'date-picker'
-      fiterPeriod:function(e,period){
-        this.startStamp = period.startStamp;
-        this.endStamp = period.endStamp
-      },
-
-      // filtro dinàmico que variarà en función del valor de las propiedades 'startStamp' y 'endStamp'
-      computeFilter:function(startStamp,endStamp){
-            if (!startStamp || !endStamp){
-                      return null // si no existen las 2 propiedades no se aplica el filtro
-                  }else{
-                    return function(item){
-                        return (item.expireStamp >= startStamp) && (item.expireStamp <= endStamp+86400000) // 86400000 corresponden a 1 dia. Si no hacemos esto el filtro no incluirà aquellas grupos cuya data de revisiòn sea igual a la fecha de vencimiento seleccionada en el date-picker, porque tenemos que considerar que el timestamp cambia a cada segundo.
-                  }                
-                  
-              }
-           
-      }, 
-
-        // envio de la denuncia por email. El usuario tiene que tener un gestor de correo, sino no funciona. Como alternativa podemos elaborar codigo en NodeJS
-    emailAlert:function(e){
-      var company = e.currentTarget.company;
-      window.location.href = "mailto:" + company.email
-                         +"?subject=" + "Revisão da empresa " + company.identificador.toUpperCase()
-                          +"&body="+  "Prezado     ," + "%0D%0A" + "%0D%0A" + "La empresa " + company.identificador.toUpperCase() + " precisa ser revisada até o dia " + company.expireDate + ". Favor atualizar a documentação" + "%0D%0A" + "%0D%0A" + "Obrigado"
-    },
-    // ponemos los contadores a 0 y a continuación lanzamos el mètodo 'timer' de manera asíncrona para dar tiempo al dom-repeat a que cargue la lista de grupos y de esa manera actualizamos los contadores
-    ready:function(){  
-      this.lengthExpired = 0;  
-      this.length45 = 0;
-      this.async(this.timer,[4000]);
-      this.async(this.setColor,[4000])
-    //  console.log(this.company)
-    },
-
-    // método que acciona el control de las empresas cuya revisión debe ser dentro de los próximos 45 dias, y aquellas que ya vencieron
-    timer:function(){
-
-   //  console.log(this.alert45);
-      var todayStamp = Date.now();
-     // var period_30 = todayStamp + 2592000000;
-     // var period_45 = todayStamp + 3888000000;
-
-      
-          
+   
+/*  setColor:function(){
       for(i in this.data){
-
-        if (this.data[i].expireStamp == 'vencido' || this.data[i].expireStamp <= todayStamp){
-                
-          // enlace con <bi-editor> para actualizar las propiedades 'expireStamp' y 'expireDate' para 'vencido'
-          this.fire('setExpired', this.data[i].$key);
-          this.warningHide = false;
-          this.push('expired',this.data[i].identificador);      
-          this.lengthExpired = this.expired.length ;       
-   
-        }
-      
-        else if (this.data[i].expireStamp < this.period_45){
-               
-         this.push('alert45',this.data[i].identificador);        
-         this.length45 = this.alert45.length; 
-             
-   
+        if (this.data[i].profile == 'Acordo'){        
+          this.push('acordo', this.data[i].identificador);        
         }
       }
-
-      this.$.spinner.active = false;
-    },
-
-    setColor:function(){
-      for(i in this.data){
-
-        if (this.data[i].profile == 'Acordo'){
-          console.log(this.data[i].style)
-          this.push('acordo', this.data[i].identificador);
-          console.log(this.acordo)
-    }
-  }
-  }
+    } */
 
 
 

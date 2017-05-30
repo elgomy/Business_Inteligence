@@ -24,11 +24,15 @@ elemento para hacer el registro en firebase a travès de email y password
       }
 
       paper-input{
-        --paper-input-container-focus-color:var(--accent-color)
+        --paper-input-container-focus-color:var(--accent-color);
+        --paper-input-container-label:{
+              font-size: 0.85em;};
       }
 
       gold-email-input{
-        --paper-input-container-focus-color:var(--accent-color)
+        --paper-input-container-focus-color:var(--accent-color);
+        --paper-input-container-label:{
+              font-size: 0.85em;};
       }
 
        paper-button{
@@ -43,6 +47,14 @@ elemento para hacer el registro en firebase a travès de email y password
         opacity: 0;
         pointer-events: none; 
       } */
+
+       @media (max-width: 400px) {
+        .inputs{
+        max-width: 230px;  
+         
+         
+         margin-left: 1px
+        }
     </style>
     <div class=inputs>    
     <paper-input label="Nome" value="{{data.name}}"></paper-input>

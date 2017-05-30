@@ -29,6 +29,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../bower_components/iron-icons/communication-icons.html">
 <link rel="import" href="../bower_components/iron-icons/hardware-icons.html">
 <link rel="import" href="my-icons.html">
+<link rel="import" href="../bower_components/iron-media-query/iron-media-query.html">
+<link rel="import" href="../bower_components/neon-animation/web-animations.html">
+<link rel="import" href="../bower_components/neon-animation/animations/scale-up-animation.html">
+<link rel="import" href="../bower_components/neon-animation/animations/fade-out-animation.html">
+
 
 <!--componentes especìficos de Animilia-->
 <link rel="import" href="../elements/elements-bi.html">
@@ -43,12 +48,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         
         display: block;
 
-        font-family: "Averta","Avenir W02","Avenir",Helvetica,Arial,sans-serif
+        font-family: "Averta","Avenir W02","Avenir",Helvetica,Arial,sans-serif;
 
-        
-      }
-
-      :root {
         --dark-primary-color:       #D32F2F;
         --default-primary-color:    black;
         --light-primary-color:      #FFCDD2; 
@@ -81,6 +82,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       app-header {
         color: #fff;
         background-color: var(--app-primary-color);
+        font-weight: bold
+      }
+
+      app-header #user{
+        font-size: 0.8em
       }
       app-header paper-icon-button {
         --paper-icon-button-ink-color: white;
@@ -95,18 +101,19 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       .drawer-list {
         margin: 0 20px;
+
       }
 
       .drawer-list a {
         display: block;
         padding: 0 16px;
         text-decoration: none;
-        color: var(--app-secondary-color);
+        color: white;
         line-height: 40px;
       }
 
       .drawer-list a.iron-selected {
-        color: black;
+        color: var(--accent-color);
         font-weight: bold;
       }
        .dropdown-content{
@@ -116,7 +123,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         box-shadow: 0 15px 3px 0 rgba(0, 0, 0, 0.10), 0 15px 20px 0 rgba(0, 0, 0, 0.2), 0 3px 1px -2px rgba(0, 0, 0, 0.2); 
         font-size: 15px;
         border-radius: 5px;
-        color:blue;
+        color:black;
+        margin-left: 15px
       } 
 
       .card-content{
@@ -129,7 +137,59 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           font-size: 15px;
         };
       }
+      
+      app-drawer{
+        --app-drawer-content-container:{
+          background:black;
+          color:white;};
+      }
+
+      span{
+        margin-left: 5px
+      }
+
+      .dropUser{
+        border-bottom:1px solid;
+        padding: 7px;
+        text-align: center;
+      }
+
+      .dropIcon{
+        margin-left: 7px
+      }
+
+      iron-icon#signIcon{
+        --iron-icon-width:30px;
+        --iron-icon-height:30px;
+      }
+
+      paper-toast#positiveToast{
+            --paper-toast-background-color:#4caf50;
+            font-weight: bold;
+
+      }
+
+      paper-toast#negativeToast{
+            --paper-toast-background-color:#e53935;
+             font-weight: bold;
+      }
+
+    
+
+     @media (min-width: 800px) {
+       app-header {
+        color: black;
+        background-color: white;
+        border-bottom: 1px solid grey;
+         box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.10), 0 5px 5px 0 rgba(0, 0, 0, 0.2), 0 3px 1px -2px rgba(0, 0, 0, 0.2); 
+      }
+     }
+      
+    
     </style>
+
+    <iron-media-query query="min-width: 1000px" query-matches="{{largeScreen}}">
+    </iron-media-query>
 
     <!--inicializamos Firebase -->
          <firebase-app 
@@ -161,7 +221,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         data="{{routeData}}"
         tail="{{subroute}}"></app-route>
 
-    <app-drawer-layout fullbleed>
+    <app-drawer-layout fullbleed responsive-width="800px">
       <!-- Drawer content -->
       <app-drawer id="drawer">
         <app-toolbar>Menu</app-toolbar>
@@ -175,34 +235,34 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       <!-- Main content -->
       <app-header-layout has-scrolling-region>
 
-        <app-header condenses reveals effects="waterfall">
+        <app-header condenses reveals effects="waterfall" fixed>
           <app-toolbar>
             <paper-icon-button icon="my-icons:menu" drawer-toggle></paper-icon-button>
-            <div main-title>RISK 3.0</div>
+            <div main-title>RISK 2.0</div>
               <div id="user" hidden$="{{!signed}}">[[perfilUsuario.nombre]]</div>
-              <iron-icon icon="expand-more" id="expandIcon" hidden$="{{!signed}}" on-tap="openDrop"></iron-icon> 
+               <iron-icon icon="perm-identity" id="signIcon" hidden$="{{signed}}" on-tap="pageSign"></iron-icon> 
+              <iron-icon icon="expand-more" id="expandIcon" hidden$="{{!signed}}" on-tap="openDrop"></iron-icon>   
+          </app-toolbar>
 
-              <iron-dropdown id="profileDrop" horizontal-align="right" vertical-align="top" vertical-offset="23" horizontal-offset="20">
+
+
+           <iron-dropdown id="profileDrop" horizontal-align="right" vertical-align="top" vertical-offset="23" horizontal-offset="20">
               <div class="dropdown-content">
-                  <p>[[perfilUsuario.nombre]]</p>
-                  <iron-icon icon="communication:contact-mail"></iron-icon><span>Alterar e-mail</span>
-                   <iron-icon icon="hardware:keyboard"></iron-icon><span>Alterar senha</span>
-                  <iron-icon icon="exit-to-app" id="exitIcon" hidden$="{{!signed}}"></iron-icon><span>Sair</span>
+                    <div class="dropUser">[[perfilUsuario.nombre]]</div>
+                    <div class="dropIcon">
+                          <iron-icon icon="communication:contact-mail"></iron-icon>
+                          <span>Alterar e-mail</span>
+                    </div>
+                    <div class="dropIcon">
+                          <iron-icon icon="hardware:keyboard"></iron-icon>
+                          <span>Alterar senha</span>
+                    </div>
+                    <div class="dropIcon">
+                        <iron-icon on-tap="logout" icon="exit-to-app" id="exitIcon" hidden$="{{!signed}}"></iron-icon>
+                        <span>Sair</span>
+                    </div>
               </div>
             </iron-dropdown>  
-            
-           
-                  
-
-            <paper-tooltip
-              for="exitIcon"
-              position="bottom"
-              offset="10">
-              Sair
-            </paper-tooltip>
-
-          
-          </app-toolbar>
         </app-header>
 
         <iron-pages
@@ -229,15 +289,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       </paper-dialog>
 
         <!-- dialog de confirmación del date-picker -->
-      <paper-dialog modal id="filterDialog" on-iron-overlay-closed="filterAccept">         
+      <paper-dialog modal id="filterDialog" on-iron-overlay-closed="filterAccept" entry-animation="scale-up-animation" exit-animation="fade-out-animation">         
             <date-picker start-stamp="{{startStamp}}" end-stamp="{{endStamp}}"></date-picker>
               <div class="buttons">
                 <paper-button dialog-dismiss>Cancelar</paper-button>
                 <paper-button dialog-confirm autofocus>Filtrar</paper-button>
               </div>
       </paper-dialog>
-
-      
 
 
   <!--toast -->
@@ -267,6 +325,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         perfilUsuario:Object,
 
         fbapp:Object,
+        largeScreen:Boolean,
 
         company:{
           type:Object,
@@ -283,7 +342,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
          'negative-toast': 'negativeFeedback',
          'delete': 'removeCompany',
          'filterDialog': 'filter',
-         'exitIcon.tap': 'exit',
+         
          
         
          },
@@ -312,13 +371,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         this.page = 'view404';
       },
 
-
-
       // enlace con el componente <company-list-BI>
       removeCompany:function(e,companyItem){
         this.$.removeDialog.open();
         this.company = companyItem;
         
+      },
+
+      pageSign:function(){
+        this.page = 'view1';
       },
       // dialog del 'date-picker'
       filter:function(){
@@ -345,14 +406,25 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         }       
       },
 
-      exit:function(){
-        this.fire('iron-signal', {name: 'logout', data:null});
+      // se colocamos el 'logout' en el componente 'login-gestion' cuando recargamos la página sólo podemos hacer el logout desde 'my-view1'. Necesitamos enter por qué de esta inconsistencia
+       logout:function(){
+        this.$.auth.signOut().catch(function(error){
+          console.log(error.code, error.message)
+        }).then(function(){
+          this.fire('iron-signal', {name: 'settimer', data:'reset'});
+          this.fire('positive-toast','Sessão encerrada');
+          this.$.profileDrop.close()
+        }.bind(this))
       },
 
       openDrop:function(){
        
         this.$.profileDrop.open()
       },
+
+      hola:function(){
+        console.log('hola')
+      }
 
 
     

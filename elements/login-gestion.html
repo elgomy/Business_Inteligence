@@ -34,8 +34,6 @@ elemento que nos permite hacer la gestion de los usuarios (login y cadastro) a t
         margin:auto;
          width: 400px;
 
-         
-
       } 
 
       img{
@@ -45,13 +43,28 @@ elemento que nos permite hacer la gestion de los usuarios (login y cadastro) a t
 
       paper-tab{
         font-family: "Averta","Avenir W02","Avenir",Helvetica,Arial,sans-serif;font-size: 14px;
-        --paper-tab-ink:var(--accent-color);   
+        --paper-tab-ink:var(--accent-color); 
+        width: 100px  
       }
 
       paper-tabs{
+        
         --paper-tabs-selection-bar-color:var(--accent-color);
         --paper-tabs-selection-bar:{
-          color:red;}
+          color:red;
+        }
+      }
+
+      @media (max-width: 400px){
+        paper-tabs{
+          max-width: 220px
+        }
+
+        paper-tap{
+          max-width: 70px
+        }
+
+
       }
 
 
@@ -72,15 +85,6 @@ elemento que nos permite hacer la gestion de los usuarios (login y cadastro) a t
                 path="/users/{{user.uid}}" 
                 data="{{perfilUsuario}}">
        </firebase-document>
-
- 
-     <template is="dom-if" if="[[user]]">
-              
-            
-              Usuario: {{perfilUsuario.nombre}}          
-     
-    </template>
-
   
     <paper-tabs selected="{{signSect}}" attr-for-selected="name">
       <paper-tab name="signin">Entrar</paper-tab>
@@ -97,7 +101,13 @@ elemento que nos permite hacer la gestion de los usuarios (login y cadastro) a t
               dato="{{dato}}">
           </login-signin>          
      
-          <login-update user="{{user}}" fbapp="{{fbapp}}" data="{{data}}" credential="{{credential}}"></login-update>
+     
+          <login-update 
+              user="{{user}}" 
+              fbapp="{{fbapp}}" 
+              data="{{data}}" 
+              credential="{{credential}}">
+        </login-update>
      
         </div>
 
@@ -157,13 +167,13 @@ elemento que nos permite hacer la gestion de los usuarios (login y cadastro) a t
           listeners:{
             'feedback-positivo': 'feedbackPositivo',
             'feedback-negativo': 'feedbackNegativo',
-
          },
 
          behaviors:[Polymer.loginBehavior, Polymer.firebaseBehavior],
         
 
         // cuando logueamos con una red social podemos recibir la propiedad 'credential', que nos permite hacer diferentes operaciones con los datos de esas redes sociales, y también nos va a permitir reautenticar al usuario para que pueda hacer las diferentes operativas del componente <login-update> (darse de baja, actualizar la contraseña, etc)
+        /*
       signIn: function(e,social){
            if (this.user){
               this.fire('negative-toast','Você já esta logueado');
@@ -181,7 +191,7 @@ elemento que nos permite hacer la gestion de los usuarios (login y cadastro) a t
               function(error){
                   this.errorCode(error); // behavior 'loginBehavior'                          
             }.bind(this));  
-          },
+          }, */
 
        
       
@@ -223,6 +233,8 @@ elemento que nos permite hacer la gestion de los usuarios (login y cadastro) a t
             .then(function(result){
                     if (result){
                       this.fire('positive-toast','Bem-vind@!');
+                      // enlace con <company-list> para activar el contador
+                      this.fire('iron-signal', {name: 'settimer', data:'set'});
                       this.resetSignin();  // behavior 'loginError' 
                     }   
                 }.bind(this));
@@ -240,13 +252,14 @@ elemento que nos permite hacer la gestion de los usuarios (login y cadastro) a t
       },
 
       // cerrar sesión de usuario
+      /*
       logout:function(){
         this.$.auth.signOut().catch(function(error){
           console.log(error.code, error.message)
         }).then(function(){
           this.fire('positive-toast','Sessão encerrada')
         }.bind(this))
-      },
+      }, */
 
 
      
