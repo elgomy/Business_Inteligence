@@ -1,0 +1,68 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+
+<dom-module id="items-count">
+  <template>
+	<style>
+		  .container{
+           @apply(--layout-vertical);
+           @apply(--layout-center);      
+            background-color: #fafafa;
+            height: 80px;          
+      }
+
+	</style>
+
+	    <div class="container">
+         
+      <span class="span" id="exp">Revisões vencidas: {{countExpired}}</span>
+      <span class="span" id="forfive">Revisar < 45 dias: {{count45}}</span>
+     
+<template is="dom-repeat" items="[[data]]" filter="filter45" rendered-item-count="{{count45}}" delay="3000"> </template>
+
+
+<template is="dom-repeat" items="[[data]]" filter="filterExpired" rendered-item-count="{{countExpired}}" delay="3000"> </template>
+    
+    </div>
+
+  </template>
+
+
+   <script>
+    Polymer({
+
+      is: 'items-count',
+
+      properties:{
+      	data:Array,
+      	count45:Number,
+      	countExpired:Number,
+
+      	period_45:{
+          type:Number,
+          value: Date.now() + 3888000000
+        },
+      },
+
+
+      // filtro del dom-repeat para obtener el contador de las empresas que vencen en menos de 45 dias
+      filter45:function(item){
+          return item.expireStamp < this.period_45
+      },
+
+      filterExpired:function(item){
+          if (item.expireStamp < Date.now() || item.expireStamp == 'vencido'){                  
+              // enlace con <bi-editor> para alterar el expireStamp y el dateStamp de Firebase para el status 'vencido'
+              this.fire('setExpired', item.$key);  
+             return item.expireStamp 
+          }
+         
+      },
+
+
+  })
+
+
+      </script>
+
+  </dom-module>

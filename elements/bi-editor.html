@@ -227,8 +227,6 @@ editor con el que vamos poder guardar los datos de entrada de los Grupos
         this.$.infoDrop.open()
       },
 
-      
-
      // enlace con el método 'timer' de <company-list>, para actualizar en Firebase las propiedades 'expireDate' y 'expireStamp' de aquellos grupos vencidos
      setExpired:function(e,dato){
       console.log(dato);
@@ -296,11 +294,6 @@ editor con el que vamos poder guardar los datos de entrada de los Grupos
 
           this.$.query.ref.update(companyUpdates)
             .then(function(){
-                // enlace con <company-list>
-                this.fire('iron-signal', {name: 'counter', data: {
-                                                                    'stamp':this.company.expireStamp,
-                                                                    'action':'add'}
-                                                                                                  });
                 this.fire('positive-toast', 'Grupo cadastrado');
                     // después de introducir los valores en los input se limpia el texto. Fijamos tanto la fecha como la dirección, ya que si los limpiamos el sistema no genera de nuevo esos valores. Behavior 'animilia-behavior'
                 this.resetCompany();
@@ -341,11 +334,6 @@ editor con el que vamos poder guardar los datos de entrada de los Grupos
        this.$.query.ref.child(companyItem.$key).remove();
        this.$.queryUpdate.ref.child(companyItem.$key).remove();
        this.fire('iron-signal', {name: 'cleardate'});
-       // enlace con <company-list> para actualizar el contador
-       this.fire('iron-signal', {name: 'counter', data: {
-                                                            'stamp':companyItem.expireStamp,
-                                                             'action':'remove'}
-                                                                                });
      
     },
 

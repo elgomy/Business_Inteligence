@@ -378,9 +378,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         
       },
 
-      pageSign:function(){
-        this.page = 'view1';
-      },
+    //  pageSign:function(){
+    //    this.page = 'view1';
+   //   },
       // dialog del 'date-picker'
       filter:function(){
         this.$.filterDialog.open();
@@ -411,7 +411,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         this.$.auth.signOut().catch(function(error){
           console.log(error.code, error.message)
         }).then(function(){
-          this.fire('iron-signal', {name: 'settimer', data:'reset'});
           this.fire('positive-toast','Sessão encerrada');
           this.$.profileDrop.close()
         }.bind(this))
@@ -422,9 +421,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         this.$.profileDrop.open()
       },
 
-      hola:function(){
-        console.log('hola')
-      }
+     
 
 
     

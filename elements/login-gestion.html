@@ -8,6 +8,8 @@
 <link rel="import" href="../bower_components/paper-tabs/paper-tabs.html">
 <link rel="import" href="../bower_components/paper-tabs/paper-tab.html">
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
+
+<link rel="import" href="../bower_components/paper-spinner/paper-spinner-lite.html">
 <!-- login elements-->
 <link rel="import" href="login-signin.html">
 <link rel="import" href="login-register.html">
@@ -100,7 +102,7 @@ elemento que nos permite hacer la gestion de los usuarios (login y cadastro) a t
               signed-in="[[signed]]"
               dato="{{dato}}">
           </login-signin>          
-     
+      <paper-spinner-lite active="{{!user}}" id="spinner"></paper-spinner-lite>
      
           <login-update 
               user="{{user}}" 
@@ -167,6 +169,7 @@ elemento que nos permite hacer la gestion de los usuarios (login y cadastro) a t
           listeners:{
             'feedback-positivo': 'feedbackPositivo',
             'feedback-negativo': 'feedbackNegativo',
+            'spinner': 'spinner'
          },
 
          behaviors:[Polymer.loginBehavior, Polymer.firebaseBehavior],
@@ -233,8 +236,7 @@ elemento que nos permite hacer la gestion de los usuarios (login y cadastro) a t
             .then(function(result){
                     if (result){
                       this.fire('positive-toast','Bem-vind@!');
-                      // enlace con <company-list> para activar el contador
-                      this.fire('iron-signal', {name: 'settimer', data:'set'});
+                     
                       this.resetSignin();  // behavior 'loginError' 
                     }   
                 }.bind(this));
