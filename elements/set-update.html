@@ -7,16 +7,6 @@
 <link rel="import" href="../bower_components/iron-signals/iron-signals.html">
 
 
-
-
-
-<!--
-`form-animilia`
-formulario de entrada de denuncias de maltrato animal
-
-@demo demo/index.html 
--->
-
 <dom-module id="set-update">
   <template>
     <style>
@@ -54,15 +44,12 @@ formulario de entrada de denuncias de maltrato animal
 </template>
     
     <p hidden$="{{display}}">Próxima Revisão: {{formattedDate}}</p>
-
-
    
 <paper-button raised id="savePeriod">salvar</paper-button>
 <paper-button raised id="editPeriod">editar</paper-button>
 <!-- enlace con el método 'save' de <bi-editor> --> 
 <iron-signals on-iron-signal-cleardate="editExpiration"></iron-signals>
 <iron-signals on-iron-signal-firebasedate="editorExpiration"></iron-signals>
-
 
 
   </template>
@@ -109,8 +96,6 @@ formulario de entrada de denuncias de maltrato animal
             value:true
           },   
 
-        
-
           
       },
 
@@ -138,11 +123,11 @@ formulario de entrada de denuncias de maltrato animal
           
           this.expireDate =  new Date();     
         
-          var dayOfMonth = this.expireDate.getDate();        
+          let dayOfMonth = this.expireDate.getDate();        
           this.expireDate.setDate(dayOfMonth + this.period);
           this.expireStamp = Date.parse(this.expireDate);
           //console.log(this.expireStamp);
-          var dateUpdate = {
+          let dateUpdate = {
                   month: this.expireDate.getMonth(),
                   year: this.expireDate.getFullYear()
           };
@@ -172,8 +157,6 @@ formulario de entrada de denuncias de maltrato animal
           
       },   
 
-
-   
 
    
     });

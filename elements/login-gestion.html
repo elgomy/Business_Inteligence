@@ -57,13 +57,16 @@ elemento que nos permite hacer la gestion de los usuarios (login y cadastro) a t
         }
       }
 
-      @media (max-width: 400px){
+
+      @media (max-width: 600px){
+
+    
         paper-tabs{
-          max-width: 220px
+          max-width: 325px
         }
 
-        paper-tap{
-          max-width: 70px
+        paper-tab{
+          max-width: 325px
         }
 
 
@@ -88,6 +91,7 @@ elemento que nos permite hacer la gestion de los usuarios (login y cadastro) a t
                 data="{{perfilUsuario}}">
        </firebase-document>
   
+  <div class="container">
     <paper-tabs selected="{{signSect}}" attr-for-selected="name">
       <paper-tab name="signin">Entrar</paper-tab>
       <paper-tab name="register">Cadastre-se</paper-tab>
@@ -102,7 +106,7 @@ elemento que nos permite hacer la gestion de los usuarios (login y cadastro) a t
               signed-in="[[signed]]"
               dato="{{dato}}">
           </login-signin>          
-      <paper-spinner-lite active="{{!user}}" id="spinner"></paper-spinner-lite>
+    
      
           <login-update 
               user="{{user}}" 
@@ -119,7 +123,8 @@ elemento que nos permite hacer la gestion de los usuarios (login y cadastro) a t
               signed-in="[[signed]]"
               data="{{data}}">
           </login-register>
-        </div>   
+        </div>  
+    </div> 
    
 </iron-pages>
           
@@ -164,7 +169,6 @@ elemento que nos permite hacer la gestion de los usuarios (login y cadastro) a t
           credential:String,
 
          },
-
 
           listeners:{
             'feedback-positivo': 'feedbackPositivo',
@@ -218,8 +222,6 @@ elemento que nos permite hacer la gestion de los usuarios (login y cadastro) a t
                     }.bind(this));
 
                 },
-
-  
            
       //login con email y password; 'dato' es el objeto pasado por el componente <login-signin>, que incluye las propiedades 'dato.email' y 'dato.password'
    
@@ -261,10 +263,7 @@ elemento que nos permite hacer la gestion de los usuarios (login y cadastro) a t
         }).then(function(){
           this.fire('positive-toast','Sessão encerrada')
         }.bind(this))
-      }, */
-
-
-     
+      }, */    
 
 
     });

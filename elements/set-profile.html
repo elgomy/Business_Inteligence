@@ -7,15 +7,6 @@
 <link rel="import" href="../bower_components/iron-signals/iron-signals.html">
 
 
-
-
-<!--
-`form-animilia`
-formulario de entrada de denuncias de maltrato animal
-
-@demo demo/index.html 
--->
-
 <dom-module id="set-profile">
   <template>
     <style>
@@ -75,17 +66,13 @@ formulario de entrada de denuncias de maltrato animal
          profile:{
             type:String,
             notify:true
-         },
-     
-
-        
+         },   
           // condicionante para mostrar u ocultar determinados datos
           display:{
             type:String,
             value:true
           },     
-
-          
+      
       },
 
       listeners:{
@@ -98,7 +85,6 @@ formulario de entrada de denuncias de maltrato animal
             this.$.saveProfile.style.display = "none";
             this.display = false;
        },
-
    
       // función que asocia el valor del 'radio-button' a la propiedad 'period'
       checkProfile:function(e){
@@ -115,15 +101,13 @@ formulario de entrada de denuncias de maltrato animal
             return false
           };
           
-        this.profile = this.checkedProfile;
+          this.profile = this.checkedProfile;
        
           // una vez guardado el pefil, se oculta el botón de guardar y se muestra el de editar. Tambíen se oculta el radio-group
           this.$.editProfile.style.display = "inline-flex";
           this.$.saveProfile.style.display = "none";
           this.display = false;
-          this.fire('deleteError')
-
-   
+          this.fire('deleteError') 
     
       },
       // editamos la fecha de vencimiento
@@ -132,10 +116,7 @@ formulario de entrada de denuncias de maltrato animal
           this.$.editProfile.style.display = "none";
           this.$.saveProfile.style.display = "inline-flex";
           this.display = true;
-      },   
-
-
-   
+      },    
 
    
     });

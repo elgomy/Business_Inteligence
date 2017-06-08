@@ -1,20 +1,39 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
-<link rel="import" href="../bower_components/vaadin-date-picker/vaadin-date-picker.html">
-<link rel="import" href="../bower_components/iron-flex-layout/classes/iron-flex-layout.html">
 
+<link rel="import" href="../bower_components/vaadin-date-picker/vaadin-date-picker.html">
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 
 
 <dom-module id="date-picker">
   <template>
     <style>
-  
+    :host{
+        
+          .custom-theme {
+    --primary-color: var(--accent-color);
+    --dark-theme-background-color: #212121;
+    --dark-theme-secondary-color: #737373;
+    --primary-text-color: #212121;
+    --secondary-text-color: #bcbcbc;
+    --light-primary-color: #212121;
+    --primary-background-color: #fafafa;
+       
+    
+        }
+
+        .container{
+          @apply(--layout-horizontal);
+        @apply(--around-justified)
+        }
+
+    }
+ 
     </style>
 
-
-
 <div class="layout horizontal around-justified">
-  <vaadin-date-picker id="start" label="Data inicial" on-value-changed="startDate"></vaadin-date-picker>
-  <vaadin-date-picker id="end" label="Data final" on-value-changed="endDate"></vaadin-date-picker>
+  <vaadin-date-picker class="custom-theme" id="start" label="Data inicial" on-value-changed="startDate"></vaadin-date-picker>
+  <vaadin-date-picker class="custom-theme" id="end" label="Data final" on-value-changed="endDate">
+  </vaadin-date-picker>
 </div>
 
   </template>
@@ -41,7 +60,7 @@
       // necesitamos traducir el calendario de Vaadin al portugués y lo hacemos injectando un objeto JSON con todas las propiedades a alterar a la propiedad 'i18n'
       ready:function(){
 
-        var localizeBr = {  
+        let localizeBr = {  
                 week: 'semana',
                 calendar: 'calendario',
                 clear: 'limpar',
@@ -61,9 +80,9 @@
     // This example produces a really strict parser which only accepts
     // perfectly formatted dates like '12.8.2013'. Less strict implementation or
     // a 3rd party parser like in the example below is recommended.
-              var parts = text.split('/');
+              let parts = text.split('/');
               if (parts.length === 3) {
-                  var date = new Date(0, 0);
+                  let date = new Date(0, 0);
                   date.setFullYear(parseInt(parts[2]));
                   date.setMonth(parseInt(parts[1]) - 1);
                   date.setDate(parseInt(parts[0]));

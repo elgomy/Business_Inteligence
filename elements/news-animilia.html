@@ -21,7 +21,7 @@ componente que mostrará noticias referentes a los malos tratos de animales
           
             <iron-ajax 
                   auto
-                  url='https://www.google.com/alerts/feeds/18430475882579114112/10352459795644244425'
+                  url='https://www.google.com/alerts/feeds/06934891833202231232/5616870127815654742'
                   handle-as="xml"  
                     
                   on-response="_on_response">
@@ -61,7 +61,9 @@ componente que mostrará noticias referentes a los malos tratos de animales
 
        _on_response : function(e){
 
+
         response = e.detail.response;
+        console.log(response);
         
         
         var root = response.documentElement;

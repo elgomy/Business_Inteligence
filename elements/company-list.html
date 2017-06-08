@@ -1,25 +1,10 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <!-- paper elements-->
-
-<link rel="import" href="../bower_components/paper-button/paper-button.html">
-<link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
 <link rel="import" href="../bower_components/paper-expansion-panel/paper-expansion-panel.html">
-<link rel="import" href="../bower_components/paper-dialog-behavior/paper-dialog-shared-styles.html">
-
-<link rel="import" href="../bower_components/paper-collapse-item/paper-collapse-item.html">
 <link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 <link rel="import" href="../bower_components/iron-signals/iron-signals.html">
-<link rel="import" href="../bower_components/iron-icons/editor-icons.html">
-
 <link rel="import" href="items-count.html">
 
-
-<!--
-`company-list-BI`
-lista de denuncias creadas en Animilia y almacenadas en Firebase
-
-@demo demo/index.html 
--->
 
 <dom-module id="company-list">
   <template>
@@ -39,18 +24,18 @@ lista de denuncias creadas en Animilia y almacenadas en Firebase
       }
 
       iron-icon{
-        --iron-icon-width:20px;
+        --iron-icon-width:25px;
+        --iron-icon-fill-color:var(--accent-color);
       }
     
-    
-
-    paper-expansion-panel{
+      paper-expansion-panel{
          --paper-expansion-panel-header: {
                var(--expansion-panel-base)            
           }
 
       --paper-expansion-panel-summary:{
           font-size: 0.8em;
+          margin-right: 1px
       }
     }
 
@@ -78,7 +63,7 @@ lista de denuncias creadas en Animilia y almacenadas en Firebase
                       border-bottom:1px solid #eceff1;
                       font-family: "Averta","Avenir W02","Avenir",Helvetica,Arial,sans-serif;
                       font-size: 0.8em;
-                      color:#ff5722;
+                      color:#ffcc80;
          };
          
       }
@@ -94,6 +79,7 @@ lista de denuncias creadas en Animilia y almacenadas en Firebase
           };     
       }
 
+
     </style>
     
     <iron-signals on-iron-signal-filter="fiterPeriod"></iron-signals>
@@ -101,8 +87,7 @@ lista de denuncias creadas en Animilia y almacenadas en Firebase
     <!-- contador -->
     <items-count data="{{data}}"></items-count>
  
-
-    <template id="template" is="dom-repeat" items="[[data]]" as="company" filter="{{computeFilter(startStamp,endStamp)}}" observe="item">  
+    <template id="template" is="dom-repeat" items="[[data]]" as="company" filter="{{computeFilter(startStamp,endStamp)}}">  
 
     <paper-expansion-panel class$="{{conditionalClass(company.profile)}}" header="[[company.identificador]]" summary="[[company.expireDate]]">
       <div class="panelContent">
@@ -114,29 +99,16 @@ lista de denuncias creadas en Animilia y almacenadas en Firebase
           <p><b>Email do GG:</b> [[company.email]] </p> 
         </div>
 
-         <div id="icons">
+      <div id="icons">
         <iron-icon icon="mail" company="[[company]]" on-tap="emailAlert"></iron-icon>
         <iron-icon icon="description" company="[[company]]" on-tap="edition"></iron-icon>
         <iron-icon icon="clear" company="[[company]]" on-tap="remove" alt="deletar"></iron-icon>
-        </div>
+      </div>
+
       </div>
 
     </paper-expansion-panel>
 
-
-
-    <paper-dialog id$="dialog{{company.identificador}}">
-         <h2 class="dialogHeader">[[company.identificador]]</h2>
-         <paper-dialog-scrollable>
-         <div class="dialogContent">
-          <p><b>Revisão:</b> [[company.expireDate]] </p> 
-          <p><b>Profile:</b> [[company.profile]] </p> 
-           <p><b>Setor:</b> [[company.setor]] </p> 
-            <p><b>Email do GG:</b> [[company.email]] </p> 
-            </div>
-        </paper-dialog-scrollable>
-     
-</paper-dialog>
 
 </template> 
 
@@ -178,26 +150,26 @@ lista de denuncias creadas en Animilia y almacenadas en Firebase
 
        // el evento 'delete' se recibe en el componente <my-app> para poder abrir el 'dialog' 
     remove:function(e) {   
-        var companyItem = e.currentTarget.company;
+        let companyItem = e.currentTarget.company;
         this.fire('delete', companyItem) 
       },
       // enlace con <bi-editor>
     edition:function(e) {    
-        var companyItem = e.currentTarget.company;
+        let companyItem = e.currentTarget.company;
         this.fire('edition', companyItem);
         this.fire('iron-signal', {name: 'setoldate', data: companyItem});
        // console.log(companyItem) 
       },
 
     send:function(e) {    
-        var companyItem = e.currentTarget.company;
+        let companyItem = e.currentTarget.company;
         this.fire('send', companyItem) 
       }, 
 
 
      // envio de la denuncia por email. El usuario tiene que tener un gestor de correo, sino no funciona. Como alternativa podemos elaborar codigo en NodeJS
     emailAlert:function(e){
-      var company = e.currentTarget.company;
+      let company = e.currentTarget.company;
       window.location.href = "mailto:" + company.email
                          +"?subject=" + "Revisão da empresa " + company.identificador.toUpperCase()
                           +"&body="+  "Prezado     ," + "%0D%0A" + "%0D%0A" + "La empresa " + company.identificador.toUpperCase() + " precisa ser revisada até o dia " + company.expireDate + ". Favor atualizar a documentação" + "%0D%0A" + "%0D%0A" + "Obrigado"

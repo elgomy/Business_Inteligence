@@ -1,38 +1,25 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/gold-email-input/gold-email-input.html">
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 <!--paper elements -->
 <link rel="import" href="../bower_components/paper-input/paper-input.html">
-
 <link rel="import" href="../bower_components/paper-input/paper-input-behavior.html">
 <link rel="import" href="../bower_components/paper-input/paper-input-container.html">
 <link rel="import" href="../bower_components/paper-input/paper-input-error.html">
-<link rel="import" href="../bower_components/paper-button/paper-button.html">
-<link rel="import" href="../bower_components/paper-radio-button/paper-radio-button.html">
 <!--iron elements -->
 <link rel="import" href="../bower_components/iron-collapse/iron-collapse.html">
 <!-- behaviors -->
 <link rel="import" href="../behaviors/input-behavior.html">
 <!-- custom components -->
-
 <link rel="import" href="set-update.html">
 <link rel="import" href="set-profile.html">
-<link rel="import" href="../bower_components/gold-email-input/gold-email-input.html">
 
-<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
-
-<!--
-`form-animilia`
-formulario de entrada de denuncias de maltrato animal
-
-@demo demo/index.html 
--->
 
 <dom-module id="company-bo">
   <template>
     <style include="iron-flex iron-flex-alignment">
       :host {
         display: block;
-
-
       }
 
       .error{
@@ -123,8 +110,6 @@ formulario de entrada de denuncias de maltrato animal
 
 </div>
 
-
-
   </template>
 
   <script>
@@ -162,8 +147,7 @@ formulario de entrada de denuncias de maltrato animal
 
          dateError:String,
          profileError:String,
-       
-          
+             
       },
 
        behaviors: [Polymer.inputBehavior],
@@ -178,7 +162,6 @@ formulario de entrada de denuncias de maltrato animal
         toggleUpdate:function(){
           this.$.updateCollapse.toggle();
          
-
         },
 
         toggleProfile:function(){
@@ -188,9 +171,6 @@ formulario de entrada de denuncias de maltrato animal
         toggleFinanc:function(){
           this.$.financCollapse.toggle();
         },
-
-
-   
 
    
     });

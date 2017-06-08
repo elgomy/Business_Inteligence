@@ -52,12 +52,10 @@ editor con el que vamos poder guardar los datos de entrada de los Grupos
 
       iron-icon{
         --iron-icon-fill-color:var(--accent-color);
+        --iron-icon-width:25px;
       }
 
-      #infoIcon{
-        --iron-icon-fill-color:#e53935;
-      
-      } 
+    
 
       .dropdown-content{
        
@@ -136,7 +134,7 @@ editor con el que vamos poder guardar los datos de entrada de los Grupos
     <!-- lista de Grupos -->
     <div name="list">  
    
-          <iron-dropdown id="infoDrop" horizontal-align="left" vertical-align="top" vertical-offset="23" >
+          <iron-dropdown id="infoDrop" horizontal-align="left" vertical-align="top" vertical-offset="80" >
               <div class="dropdown-content">
                 <p><span id="normal">Normal:</span> grupos em situaçao normal</p>
                 <p><span id="acompanhamento">Acompanhamento:</span> grupos com ponto de atençao</p>
@@ -146,18 +144,17 @@ editor con el que vamos poder guardar los datos de entrada de los Grupos
           </iron-dropdown>    
       <paper-fab icon="add" id="createcompany"></paper-fab> 
 
-        
-       
+     <!-- iconos de ordenación y filtrado de los grupos -->
       <div class="filterIcons">
-      <iron-icon  icon="info" id="infoIcon" on-tap="openDrop"></iron-icon>  
+
+        <iron-icon  icon="info" id="infoIcon" on-tap="openDrop"></iron-icon>  
         <iron-icon class="flexchild" icon="swap-vert" id="sortDate"></iron-icon>  
         <iron-icon  icon="av:sort-by-alpha" id="sortName"></iron-icon > 
         <iron-icon  icon="event" on-tap="filterDialog" id="calendar"></iron-icon>  
               
-      </div>
+      </div>  
+      <company-list data="[[data]]" company="[[company]]"></company-list>   
 
-       
-      <company-list data="[[data]]" company="[[company]]"></company-list>       
     </div>
 
     <!-- editor de Grupos -->
@@ -229,8 +226,7 @@ editor con el que vamos poder guardar los datos de entrada de los Grupos
 
      // enlace con el método 'timer' de <company-list>, para actualizar en Firebase las propiedades 'expireDate' y 'expireStamp' de aquellos grupos vencidos
      setExpired:function(e,dato){
-      console.log(dato);
-      var update = {
+      let update = {
         expireDate: 'vencido',
         expireStamp: 'vencido'
        };
@@ -240,13 +236,13 @@ editor con el que vamos poder guardar los datos de entrada de los Grupos
     // filtrar grupos por fecha
     sortDate:function(){
         this.filter = 'expireStamp';
-        this.$.sortDate.style.display = 'none'
+        this.$.sortDate.style.display = 'none';
         this.$.sortName.style.display = 'block'
     },
     // filtrar grupos por orden alfabetico
     sortName:function(){
         this.filter = 'identificador';
-        this.$.sortDate.style.display = 'block'
+        this.$.sortDate.style.display = 'block';
         this.$.sortName.style.display = 'none'
     },
 
@@ -270,21 +266,20 @@ editor con el que vamos poder guardar los datos de entrada de los Grupos
   
         if(this.company.identificador && this.company.setor && this.company.expireDate && this.company.profile){
         
-          var calendarData = {
+          let calendarData = {
                 identificador: this.company.identificador,
                 expireDate:    this.company.expireDate,
                 timestamp:     this.company.expireStamp,
           };    
            // generamos una key (id) para el Grupo que será la misma para las 2 ramas
-          var newCompanyKey = this.$.query.ref.push().key;
+          let newCompanyKey = this.$.query.ref.push().key;
             // subida de datos al path de la Agenda
-          var calendarUpdates = {};
+          let calendarUpdates = {};
             // representa al path          =   datos a subir al path
           calendarUpdates[newCompanyKey] = calendarData;
             // subida de datos al path de los Grupos
-          var companyUpdates = {};
+          let companyUpdates = {};
           companyUpdates[newCompanyKey] = this.company;
-
 
             // tenemos que usar 'update' en lugar de 'push' porque este último siempre genera una 'key', por lo que se generarían 2 keys
           this.$.queryUpdate.ref.update(calendarUpdates)
@@ -299,8 +294,7 @@ editor con el que vamos poder guardar los datos de entrada de los Grupos
                 this.resetCompany();
                    // una vez guardada la denuncia, volvemos a mostrar el listado de denuncias 
                 this.backList();
-                 // enlace con <set-update> para limpiar el vencimiento seleccionado cuando se guarde un grupo
-                
+                 // enlace con <set-update> para limpiar el vencimiento seleccionado cuando se guarde un grupo         
                 this.fire('iron-signal', {name: 'cleardate'});
                 
               }.bind(this))
@@ -329,12 +323,10 @@ editor con el que vamos poder guardar los datos de entrada de los Grupos
     removeItem:function(e,companyItem){
       // BI-behavior. Método para definir el path de la agenda, asignando un valor a 'month' y a 'year'
        this.setPathdate(companyItem.expireDate);
-
       // borramos los datos de la empresa en los dos paths de Firebase simultaneamente
        this.$.query.ref.child(companyItem.$key).remove();
        this.$.queryUpdate.ref.child(companyItem.$key).remove();
-       this.fire('iron-signal', {name: 'cleardate'});
-     
+       this.fire('iron-signal', {name: 'cleardate'});    
     },
 
      // edición del grupo clickado en la lista. Enlace del componente <company-list> con el componente <company-edit>. Recibimos el objeto de la denuncia 'companyItem' desde el componente <company-list> y se lo inyectamos a la propiedad 'item' del componente <company-edit>, para que podamos editar la denuncia. Tambièn le pasamos el path de la denuncia a travès de la propiedad 'path', de manera que podamos hacer el update a dicho path.
@@ -365,7 +357,7 @@ editor con el que vamos poder guardar los datos de entrada de los Grupos
           return false
          };
 
-      var calendarUpdates = {};
+      let calendarUpdates = {};
             // representa al path          =   datos a subir al path
       calendarUpdates[this.calendarKey] = calendarUpdate;    
       this.$.queryUpdate.ref.update(calendarUpdates)
